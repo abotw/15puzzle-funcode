@@ -11,6 +11,10 @@
 //
 //
 CGameMain		g_GameMain;	
+// s2
+const float CGameMain::m_fBlockSize = 18.75f;
+const float CGameMain::m_fBlockStartX = -40.625f;
+const float CGameMain::m_fBlockStartY = -28.125f;
 
 //==============================================================================
 //
@@ -76,6 +80,36 @@ void CGameMain::GameMainLoop( float	fDeltaTime )
 // 每局开始前进行初始化，清空上一局相关数据
 void CGameMain::GameInit()
 {
+	// s2 初始化方块数据
+	int iLoopX = 0, iLoopY = 0, iLoop = 0;
+	int iOneIndex = 0, iRandIndex = 0;
+	int iDataCount = BLOCK_COUNT * BLOCK_COUNT - 1;
+	int iRandData[BLOCK_COUNT * BLOCK_COUNT - 1] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+	// s2 遍历二维数组并随机初始化方块
+	for (iLoopY = 0; iLoopY < BLOCK_COUNT; iLoopY++) {
+		for (iLoopX = 0; iLoopX < BLOCK_COUNT; iLoopX++) {
+			iOneIndex = XYToOneIndex(iLoopX, iLoopY);
+        
+			// 设定空位
+			if (iLoopX == BLOCK_COUNT - 1 && iLoopY == BLOCK_COUNT - 1) {
+				m_iBlockState[iLoopY][iLoopX] = 0;
+				m_spBlock[iOneIndex] = new CSprite("NULL");
+			} else {
+				// 随机选择一个未使用的数值
+				iRandIndex = CSystem::RandomRange(0, iDataCount - 1);
+				m_iBlockState[iLoopY][iLoopX] = iRandData[iRandIndex];
+				char* tmpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[iLoopY][iLoopX]);
+				m_spBlock[iOneIndex] = new CSprite(tmpName);
+				MoveSpriteToBlock(m_spBlock[iOneIndex], iLoopX, iLoopY);
+            
+				// 移动剩余数据，防止重复
+				for (iLoop = iRandIndex; iLoop < iDataCount - 1; iLoop++) {
+					iRandData[iLoop] = iRandData[iLoop + 1];
+				}
+				iDataCount--;
+			}
+		}
+	}
 }
 //=============================================================================
 //
@@ -97,4 +131,18 @@ void CGameMain::OnKeyDown(const int iKey, const bool iAltPress, const bool iShif
       m_iGameState = 1; // 进入游戏状态
       m_spGameBegin->SetSpriteVisible(false); // 隐藏 "空格开始" 精灵
   }
+}
+//=============================================================================
+//
+// s2 索引转换
+int CGameMain::XYToOneIndex(const int iIndexX, const int iIndexY) {
+    return (iIndexY * BLOCK_COUNT + iIndexX);
+}
+//=============================================================================
+//
+// s2 移动精灵到指定位置
+void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, const int iIndexX, const int iIndexY) {
+   float fPosX = m_fBlockStartX + iIndexX * m_fBlockSize;
+   float fPosY = m_fBlockStartY + iIndexY * m_fBlockSize;
+   tmpSprite->SetSpritePosition(fPosX, fPosY);
 }
