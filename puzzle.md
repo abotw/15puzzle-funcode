@@ -78,17 +78,6 @@ if (iKey == KEY_SPACE && m_iGameState == 0) {
 }
 ```
 
----
-
-```cpp
-void CGameMain::OnKeyDown(const int iKey, const int iAltPress, const int iShiftPress, const int iCtrlPress) {
-  if (iKey == KEY_SPACE && m_iGameState == 0) {
-      m_iGameState = 1; // 进入游戏状态
-      m_spGameBegin->SetSpriteVisible(false); // 隐藏 "空格开始" 精灵
-  }
-}
-```
-
 ##### 4. 绑定键盘输入处理
 
 在 `Main.cpp` 文件中，将系统的按键输入事件传递到 `OnKeyDown` 进行处理。
