@@ -288,7 +288,7 @@ void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const fl
     m_iBlockState[iEmptyIndexY][iEmptyIndexX] = tempState;
 
     int iOneIndex = XYToOneIndex(iEmptyIndexX, iEmptyIndexY);
-    CBlock* tempBlock = m_spBlock[iClickIndex];
+    CSprite *tempBlock = m_spBlock[iClickIndex];
     m_spBlock[iClickIndex] = m_spBlock[iOneIndex];
     m_spBlock[iOneIndex] = tempBlock;
 
