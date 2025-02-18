@@ -263,26 +263,26 @@ void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const fl
     int iEmptyIndexX = -1, iEmptyIndexY = -1;
 
     // 判断四个方向是否有空位
-    if (iIndexX > 0 && m_iBlockState[iIndexY][iIndexX - 1] == 0) {
+    if (iIndexX > 0 && m_iBlockState[iIndexY][iIndexX - 1] == 0) {    // left
         iEmptyIndexX = iIndexX - 1;
         iEmptyIndexY = iIndexY;
     }
-    else if (iIndexX < BLOCK_COUNT - 1 && m_iBlockState[iIndexY][iIndexX + 1] == 0) {
+    else if (iIndexX < BLOCK_COUNT - 1 && m_iBlockState[iIndexY][iIndexX + 1] == 0) {    // right
         iEmptyIndexX = iIndexX + 1;
         iEmptyIndexY = iIndexY;
     }
-    else if (iIndexY > 0 && m_iBlockState[iIndexY - 1][iIndexX] == 0) {
+    else if (iIndexY > 0 && m_iBlockState[iIndexY - 1][iIndexX] == 0) {    // top
         iEmptyIndexX = iIndexX;
         iEmptyIndexY = iIndexY - 1;
     }
-    else if (iIndexY < BLOCK_COUNT - 1 && m_iBlockState[iIndexY + 1][iIndexX] == 0) {
+    else if (iIndexY < BLOCK_COUNT - 1 && m_iBlockState[iIndexY + 1][iIndexX] == 0) {    // bottom
         iEmptyIndexX = iIndexX;
         iEmptyIndexY = iIndexY + 1;
     }
 
     if (iEmptyIndexX == -1 || iEmptyIndexY == -1) return;
 
-    // 交换方块位置（不使用 std::swap）
+    // 交换方块位置
     int tempState = m_iBlockState[iIndexY][iIndexX];
     m_iBlockState[iIndexY][iIndexX] = m_iBlockState[iEmptyIndexY][iEmptyIndexX];
     m_iBlockState[iEmptyIndexY][iEmptyIndexX] = tempState;
