@@ -176,7 +176,7 @@ for (iLoopY = 0; iLoopY < BLOCK_COUNT; iLoopY++) {
             // 随机选择一个未使用的数值
             iRandIndex = CSystem::RandomRange(0, iDataCount - 1);
             m_iBlockState[iLoopY][iLoopX] = iRandData[iRandIndex];
-            char* tmpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[iLoopY][iLoopX]);
+            char *tmpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[iLoopY][iLoopX]);
             m_spBlock[iOneIndex] = new CSprite(tmpName);
             MoveSpriteToBlock(m_spBlock[iOneIndex], iLoopX, iLoopY);
             
