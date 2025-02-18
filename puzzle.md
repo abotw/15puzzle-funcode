@@ -43,11 +43,11 @@
 在 `LessonX.h` 文件中，声明“空格开始”精灵变量，并定义 `OnKeyDown` 函数：
 
 ```cpp
-CSprite* m_spGameBegin; // "空格开始"精灵
+CSprite *m_spGameBegin; // "空格开始"精灵
 ```
 
 ```cpp
-void OnKeyDown(const int iKey, const int iAltPress, const int iShiftPress, const int iCtrlPress);
+void OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress);
 ```
 
 ##### 2. 初始化“空格开始”精灵
@@ -61,7 +61,7 @@ m_spGameBegin = new CSprite("GameBegin");
 在 `LessonX.cpp` 末尾添加 `OnKeyDown` 函数的定义：
 
 ```cpp
-void CGameMain::OnKeyDown(const int iKey, const int iAltPress, const int iShiftPress, const int iCtrlPress) {
+void CGameMain::OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress) {
 }
 ```
 
