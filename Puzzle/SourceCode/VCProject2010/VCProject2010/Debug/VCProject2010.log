@@ -1,13 +1,11 @@
-﻿生成启动时间为 2/18/2025 3:17:00 PM。
+﻿生成启动时间为 2/18/2025 3:52:49 PM。
 项目“E:\repos\15puzzle-funcode\Puzzle\SourceCode\VCProject2010\VCProject2010\VCProject2010.vcxproj”在节点 2 上(build 个目标)。
 InitializeBuildStatus:
   正在创建“Debug\VCProject2010.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
   C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I../../Header /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Src\LessonX.cpp ..\..\Src\Main.cpp
-  LessonX.cpp
-  正在生成代码...
-  正在编译...
   Main.cpp
+  LessonX.cpp
   正在生成代码...
 ResourceCompile:
   所有输出均为最新。
@@ -28,4 +26,4 @@ FinalizeBuildStatus:
 
 生成成功。
 
-已用时间 00:00:03.93
+已用时间 00:00:03.57

@@ -50,7 +50,8 @@ void CSystem::OnMouseMove( const float fMouseX, const float fMouseY )
 void CSystem::OnMouseClick( const int iMouseType, const float fMouseX, const float fMouseY )
 {
 	// 可以在此添加游戏需要的响应函数
-
+	// s3
+	g_GameMain.OnMouseClick(iMouseType, fMouseX, fMouseY);
 }
 //==========================================================================
 //

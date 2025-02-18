@@ -49,6 +49,11 @@ public:
 	int XYToOneIndex(const int iIndexX, const int iIndexY);
 	// s2 定义移动精灵到指定位置的函数
 	void MoveSpriteToBlock(CSprite *tmpSprite, const int iIndexX, const int iIndexY);
+	// s3 鼠标点击处理函数
+	void OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY);
+	// s3
+	int OneIndexToX(const int iIndex);
+	int OneIndexToY(const int iIndex);
 };
 
 /////////////////////////////////////////////////////////////////////////////////
