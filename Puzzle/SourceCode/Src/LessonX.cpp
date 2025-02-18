@@ -22,6 +22,8 @@ CGameMain		g_GameMain;
 CGameMain::CGameMain()
 {
 	m_iGameState			=	0;
+	// s1
+	m_spGameBegin = new CSprite("GameBegin");
 }
 //==============================================================================
 //
@@ -86,4 +88,13 @@ void CGameMain::GameRun( float fDeltaTime )
 // 本局游戏结束
 void CGameMain::GameEnd()
 {
+}
+//=============================================================================
+//
+// s1
+void CGameMain::OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress) {
+  if (iKey == KEY_SPACE && m_iGameState == 0) {
+      m_iGameState = 1; // 进入游戏状态
+      m_spGameBegin->SetSpriteVisible(false); // 隐藏 "空格开始" 精灵
+  }
 }
