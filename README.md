@@ -346,7 +346,7 @@ g_GameMain.OnMouseClick(iMouseType, fMouseX, fMouseY);
 在 `LessonX.h` 中添加自定义的判断是否胜利的函数 `IsGameWin` 声明：
 
 ```cpp
-int IsGameWin();
+bool IsGameWin();
 ```
 
 ##### 2. 添加 IsGameWin 函数定义
@@ -354,7 +354,7 @@ int IsGameWin();
 在 `LessonX.cpp` 中，添加 `IsGameWin` 函数定义。在文件末尾添加如下代码：
 
 ```cpp
-int CGameMain::IsGameWin() {
+bool CGameMain::IsGameWin() {
     // 待实现逻辑
 }
 ```
@@ -407,7 +407,7 @@ return 1;
 
   ```cpp
   if (!IsGameWin()) {
-      GameRun();
+      GameRun( fDeltaTime );
   }
   ```
 
@@ -418,7 +418,7 @@ return 1;
 
 ```cpp
 // 显示提示开始文字
-m_spGameBegin->SetSpriteVisible(ture);
+m_spGameBegin->SetSpriteVisible(1);
 ```
 
 #### 【实验总结】
