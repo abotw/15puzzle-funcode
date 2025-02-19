@@ -54,6 +54,8 @@ public:
 	// s3
 	int OneIndexToX(const int iIndex);
 	int OneIndexToY(const int iIndex);
+	// s4
+	bool IsGameWin();
 };
 
 /////////////////////////////////////////////////////////////////////////////////

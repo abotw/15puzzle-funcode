@@ -1,7 +1,7 @@
-//-------------------------- 2/18/2025 -- 15:52:54 -----
+//-------------------------- 2/19/2025 -- 10:43:58 -----
 Processor Init:
    Intel (unknown, Pentium Pro/II/III family), ~2.40 Ghz
-     (timed at roughly 2.41 Ghz)
+     (timed at roughly 2.40 Ghz)
    FPU detected
    MMX detected
    SSE detected
@@ -123,6 +123,8 @@ Activating DirectInput...
 DirectInput joystick failed to enable!
 Compiling E:/repos/15puzzle-funcode/Puzzle/Bin/game/data/levels/level.t2d...
 Loading compiled script E:/repos/15puzzle-funcode/Puzzle/Bin/game/data/levels/level.t2d.
+DirectInput deactivated.
+Activating DirectInput...
 DirectInput deactivated.
 Shutting down the OpenGL display device...
 Making the GL rendering context not current...

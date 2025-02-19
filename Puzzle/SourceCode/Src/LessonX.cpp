@@ -57,8 +57,7 @@ void CGameMain::GameMainLoop( float	fDeltaTime )
 	case 2:
 		{
 			// TODO 修改此处游戏循环条件，完成正确游戏逻辑
-			if( true )
-			{
+			if (!IsGameWin()) {
 				GameRun( fDeltaTime );
 			}
 			else // 游戏结束。调用游戏结算函数，并把游戏状态修改为结束状态
@@ -122,6 +121,8 @@ void CGameMain::GameRun( float fDeltaTime )
 // 本局游戏结束
 void CGameMain::GameEnd()
 {
+	// 显示提示开始文字
+	m_spGameBegin->SetSpriteVisible(1);
 }
 //=============================================================================
 //
@@ -212,4 +213,29 @@ int CGameMain::OneIndexToX(const int iIndex) {
 
 int CGameMain::OneIndexToY(const int iIndex) {
     return iIndex / BLOCK_COUNT;
+}
+//=============================================================================
+//
+// s4
+bool CGameMain::IsGameWin() {
+	int iLoopX = 0, iLoopY = 0;
+	int iResult = 1;
+
+	for (iLoopY = 0; iLoopY < BLOCK_COUNT; iLoopY++) {
+		for (iLoopX = 0; iLoopX < BLOCK_COUNT; iLoopX++) {
+			// 判断是否为最后一个位置
+			if (iLoopX == BLOCK_COUNT - 1 && iLoopY == BLOCK_COUNT - 1) {
+				return (m_iBlockState[iLoopY][iLoopX] == 0) ? 1 : 0;
+			}
+        
+			// 若值不符合预期，则游戏未胜利
+			if (m_iBlockState[iLoopY][iLoopX] != iResult) {
+				return 0;
+			}
+        
+			iResult++;
+		}
+	}
+
+	return 1;
 }
