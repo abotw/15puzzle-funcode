@@ -8,6 +8,9 @@
 #include "CommonClass.h"
 #include "LessonX.h"
 ////////////////////////////////////////////////////////////////////////////////
+#include <iostream>
+#include <string>
+#include <sstream>
 //
 //
 CGameMain		g_GameMain;	
@@ -85,30 +88,44 @@ void CGameMain::GameInit()
 	int iDataCount = BLOCK_COUNT * BLOCK_COUNT - 1;
 	int iRandData[BLOCK_COUNT * BLOCK_COUNT - 1] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 	// s2 遍历二维数组并随机初始化方块
-	for (iLoopY = 0; iLoopY < BLOCK_COUNT; iLoopY++) {
-		for (iLoopX = 0; iLoopX < BLOCK_COUNT; iLoopX++) {
-			iOneIndex = XYToOneIndex(iLoopX, iLoopY);
-        
-			// 设定空位
-			if (iLoopX == BLOCK_COUNT - 1 && iLoopY == BLOCK_COUNT - 1) {
-				m_iBlockState[iLoopY][iLoopX] = 0;
-				m_spBlock[iOneIndex] = new CSprite("NULL");
-			} else {
-				// 随机选择一个未使用的数值
-				iRandIndex = CSystem::RandomRange(0, iDataCount - 1);
-				m_iBlockState[iLoopY][iLoopX] = iRandData[iRandIndex];
-				char* tmpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[iLoopY][iLoopX]);
-				m_spBlock[iOneIndex] = new CSprite(tmpName);
-				MoveSpriteToBlock(m_spBlock[iOneIndex], iLoopX, iLoopY);
-            
-				// 移动剩余数据，防止重复
-				for (iLoop = iRandIndex; iLoop < iDataCount - 1; iLoop++) {
-					iRandData[iLoop] = iRandData[iLoop + 1];
-				}
-				iDataCount--;
-			}
+    std::vector<int> tiles;
+    for (int i = 1; i <= 15; i++) {
+        tiles.push_back(i);
+    }
+
+    // 随机种子
+    std::srand(std::time(0));
+
+    // 生成可解的拼图
+    do {
+        std::random_shuffle(tiles.begin(), tiles.end());
+    } while (GetInversionCount(tiles) % 2 != 0);  // 逆序数必须是偶数
+
+    // 填充拼图数组（空位固定在[3][3]）
+    int index = 0;
+    for (int i = 0; i < BLOCK_COUNT; i++) {
+        for (int j = 0; j < BLOCK_COUNT; j++) {
+            if (i == BLOCK_COUNT - 1 && j == BLOCK_COUNT - 1) {
+                m_iBlockState[i][j] = 0;
+                m_spBlock[XYToOneIndex(j, i)] = new CSprite("NULL");
+            } else {
+                m_iBlockState[i][j] = tiles[index++];
+                char* tmpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[i][j]);
+                m_spBlock[XYToOneIndex(j, i)] = new CSprite(tmpName);
+                MoveSpriteToBlock(m_spBlock[XYToOneIndex(j, i)], j, i);
+            }
+        }
+    }
+	//
+	std::stringstream ss;
+	for (size_t i = 0; i < tiles.size(); ++i) {
+		ss << tiles[i];
+		if (i != tiles.size()-1) {
+			ss << " ";
 		}
 	}
+	std::string str = ss.str();
+	CSystem::SetWindowTitle(&str[0]);
 }
 //=============================================================================
 //
@@ -138,6 +155,18 @@ void CGameMain::OnKeyDown(const int iKey, const bool iAltPress, const bool iShif
 // s2 索引转换
 int CGameMain::XYToOneIndex(const int iIndexX, const int iIndexY) {
     return (iIndexY * BLOCK_COUNT + iIndexX);
+}
+//=============================================================================
+//
+// s2 计算逆序数（Inversion Count）
+int CGameMain::GetInversionCount(const std::vector<int>& tiles) {
+    int invCount = 0;
+    for (size_t i = 0; i < tiles.size(); i++) {
+        for (size_t j = i + 1; j < tiles.size(); j++) {
+            if (tiles[i] > tiles[j]) invCount++;
+        }
+    }
+    return invCount;
 }
 //=============================================================================
 //

@@ -1,13 +1,11 @@
-﻿生成启动时间为 2/19/2025 10:34:23 AM。
+﻿生成启动时间为 2/19/2025 11:25:44 AM。
 项目“E:\repos\15puzzle-funcode\Puzzle\SourceCode\VCProject2010\VCProject2010\VCProject2010.vcxproj”在节点 2 上(build 个目标)。
 InitializeBuildStatus:
   正在创建“Debug\VCProject2010.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I../../Header /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Src\LessonX.cpp ..\..\Src\Main.cpp
+  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I../../Header /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Src\LessonX.cpp
   LessonX.cpp
-  正在生成代码...
-  正在跳过...(未检测到相关更改)
-  Main.cpp
+e:\repos\15puzzle-funcode\puzzle\sourcecode\src\lessonx.cpp(97): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
 ResourceCompile:
   所有输出均为最新。
 Link:
@@ -27,4 +25,4 @@ FinalizeBuildStatus:
 
 生成成功。
 
-已用时间 00:00:05.33
+已用时间 00:00:03.57

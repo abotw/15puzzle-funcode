@@ -8,7 +8,10 @@
 #define _LESSON_X_H_
 //
 #include <Windows.h>
-
+#include <vector>
+#include <algorithm>  // std::random_shuffle
+#include <cstdlib>    // std::rand, std::srand
+#include <ctime>      // std::time
 // s2
 #define BLOCK_COUNT 4 // 4x4 矩阵方块
 
@@ -47,6 +50,7 @@ public:
 	void OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress);
 	// s2 定义索引转换函数
 	int XYToOneIndex(const int iIndexX, const int iIndexY);
+	int GetInversionCount(const std::vector<int>& tiles);
 	// s2 定义移动精灵到指定位置的函数
 	void MoveSpriteToBlock(CSprite *tmpSprite, const int iIndexX, const int iIndexY);
 	// s3 鼠标点击处理函数
