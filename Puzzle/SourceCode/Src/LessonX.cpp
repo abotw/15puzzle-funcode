@@ -177,26 +177,9 @@ void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, int iIndexX, int iIndexY)
 
 //=================================================================================
 //
-// 判断游戏是否胜利
+// 处理鼠标按键
 //
 //=================================================================================
-bool CGameMain::IsGameWin()
-{
-    int expectedValue = 1;
-    for (int y = 0; y < BLOCK_COUNT; y++)
-    {
-        for (int x = 0; x < BLOCK_COUNT; x++)
-        {
-            if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1)
-                return (m_iBlockState[y][x] == 0);
-            if (m_iBlockState[y][x] != expectedValue++)
-                return false;
-        }
-    }
-    return true;
-}
-
-//
 void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY) {
     // 只处理游戏进行中的鼠标响应
     if (m_iGameState != 2) return;
@@ -250,4 +233,25 @@ void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const fl
     m_spBlock[iOneIndex] = tempBlock;
     // 移动方块至新位置，重新渲染
     MoveSpriteToBlock(m_spBlock[iOneIndex], iEmptyIndexX, iEmptyIndexY);
+}
+
+//=================================================================================
+//
+// 判断游戏是否胜利
+//
+//=================================================================================
+bool CGameMain::IsGameWin()
+{
+    int expectedValue = 1;
+    for (int y = 0; y < BLOCK_COUNT; y++)
+    {
+        for (int x = 0; x < BLOCK_COUNT; x++)
+        {
+            if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1)
+                return (m_iBlockState[y][x] == 0);
+            if (m_iBlockState[y][x] != expectedValue++)
+                return false;
+        }
+    }
+    return true;
 }
