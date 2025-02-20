@@ -1,65 +1,81 @@
 /////////////////////////////////////////////////////////////////////////////////
 //
-//
-//
+// LessonX.h - æ¸¸æˆä¸»æ§åˆ¶å¤´æ–‡ä»¶
 //
 /////////////////////////////////////////////////////////////////////////////////
 #ifndef _LESSON_X_H_
 #define _LESSON_X_H_
-//
+
 #include <Windows.h>
 
-// s2
-#define BLOCK_COUNT 4 // 4x4 ¾ØÕó·½¿é
+// å®šä¹‰æ¸¸æˆæ–¹å—çš„æ•°é‡ (4x4 çŸ©é˜µ)
+#define BLOCK_COUNT 4
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-// ÓÎÏ·×Ü¹ÜÀà¡£¸ºÔğ´¦ÀíÓÎÏ·Ö÷Ñ­»·¡¢ÓÎÏ·³õÊ¼»¯¡¢½áÊøµÈ¹¤×÷
-class	CGameMain
+// CGameMain - æ¸¸æˆæ€»ç®¡ç±»ï¼Œè´Ÿè´£æ¸¸æˆå¾ªç¯ã€åˆå§‹åŒ–ã€è¿è¡ŒåŠç»“æŸç­‰é€»è¾‘
+//
+/////////////////////////////////////////////////////////////////////////////////
+class CGameMain
 {
 private:
-	int				m_iGameState;				// ÓÎÏ·×´Ì¬£¬0£º½áÊø»òÕßµÈ´ı¿ªÊ¼£»1£º³õÊ¼»¯£»2£ºÓÎÏ·½øĞĞÖĞ
-	// s1
-	CSprite *m_spGameBegin; // "¿Õ¸ñ¿ªÊ¼"¾«Áé
-	// s2
-	static const float m_fBlockStartX;
-	static const float m_fBlockStartY;
-	static const float m_fBlockSize;
-	int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT];
-	CSprite* m_spBlock[BLOCK_COUNT * BLOCK_COUNT];
+    int m_iGameState; // æ¸¸æˆçŠ¶æ€: 0=ç»“æŸæˆ–ç­‰å¾…å¼€å§‹, 1=åˆå§‹åŒ–, 2=æ¸¸æˆè¿›è¡Œä¸­
+    
+    // "ç©ºæ ¼å¼€å§‹"ç²¾çµ
+    CSprite* m_spGameBegin;
+    
+    // 4x4 ä½ç½®å‚æ•°
+    static const float m_fBlockStartX; // æ–¹å—èµ·å§‹Xåæ ‡
+    static const float m_fBlockStartY; // æ–¹å—èµ·å§‹Yåæ ‡
+    static const float m_fBlockSize;   // æ–¹å—å¤§å°
+    
+    // æ–¹å—çŠ¶æ€æ•°ç»„
+    int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT];
+    
+    // å­˜å‚¨æ‰€æœ‰æ–¹å—çš„ç²¾çµ
+    CSprite* m_spBlock[BLOCK_COUNT * BLOCK_COUNT];
+    
 public:
-	CGameMain();            //¹¹Ôìº¯Êı
-	~CGameMain();           //Îö¹¹º¯Êı  
+    // æ„é€  & ææ„å‡½æ•°
+    CGameMain();  
+    ~CGameMain(); 
 
-	// Get·½·¨
-	int				GetGameState()											{ return m_iGameState; }
-	
-	// Set·½·¨
-	void			SetGameState( const int iState )				{ m_iGameState	=	iState; }
-	
-	// ÓÎÏ·Ö÷Ñ­»·µÈ
-	void			GameMainLoop( float	fDeltaTime );
-	void			GameInit();
-	void			GameRun( float fDeltaTime );
-	void			GameEnd();
+    // è·å–æ¸¸æˆçŠ¶æ€
+    int GetGameState() { return m_iGameState; }
+    
+    // è®¾ç½®æ¸¸æˆçŠ¶æ€
+    void SetGameState(const int iState) { m_iGameState = iState; }
+    
+    // æ¸¸æˆä¸»å¾ªç¯å‡½æ•°
+    void GameMainLoop(float fDeltaTime);
+    void GameInit();
+    void GameRun(float fDeltaTime);
+    void GameEnd();
 
-	// s1 ¶¨ÒåOnKeyDownº¯Êı
-	void OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress);
-	// s2 ¶¨ÒåË÷Òı×ª»»º¯Êı
-	int XYToOneIndex(const int iIndexX, const int iIndexY);
-	// s2 ¶¨ÒåÒÆ¶¯¾«Áéµ½Ö¸¶¨Î»ÖÃµÄº¯Êı
-	void MoveSpriteToBlock(CSprite *tmpSprite, const int iIndexX, const int iIndexY);
-	// s3 Êó±êµã»÷´¦Àíº¯Êı
-	void OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY);
-	// s3
-	int OneIndexToX(const int iIndex);
-	int OneIndexToY(const int iIndex);
-	// s4
-	bool IsGameWin();
+    // å¤„ç†é”®ç›˜æŒ‰é”®è¾“å…¥
+    void OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress);
+    
+    // ç´¢å¼•è½¬æ¢ (äºŒç»´åæ ‡ -> ä¸€ç»´ç´¢å¼•)
+    int XYToOneIndex(const int iIndexX, const int iIndexY);
+    
+    // ç§»åŠ¨ç²¾çµåˆ°æŒ‡å®šçš„æ–¹å—ä½ç½®
+    void MoveSpriteToBlock(CSprite* tmpSprite, const int iIndexX, const int iIndexY);
+    
+    // å¤„ç†é¼ æ ‡ç‚¹å‡»
+    void OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY);
+    
+    // ä¸€ç»´ç´¢å¼•è½¬æ¢å›Xæˆ–Yç´¢å¼•
+    int OneIndexToX(const int iIndex);
+    int OneIndexToY(const int iIndex);
+    
+    // åˆ¤æ–­æ˜¯å¦è·èƒœ
+    bool IsGameWin();
 };
 
 /////////////////////////////////////////////////////////////////////////////////
-// 
-extern CGameMain	g_GameMain;
+//
+// å…¨å±€æ¸¸æˆç®¡ç†å¯¹è±¡
+//
+extern CGameMain g_GameMain;
 
 #endif // _LESSON_X_H_
