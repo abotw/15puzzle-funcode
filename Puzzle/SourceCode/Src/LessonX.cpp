@@ -1,241 +1,197 @@
 /////////////////////////////////////////////////////////////////////////////////
 //
-//
-//
+// LessonX.cpp - æ¸¸æˆæ ¸å¿ƒé€»è¾‘å®ç°æ–‡ä»¶
 //
 /////////////////////////////////////////////////////////////////////////////////
-#include <Stdio.h>
+#include <stdio.h>
 #include "CommonClass.h"
 #include "LessonX.h"
-////////////////////////////////////////////////////////////////////////////////
+
+//=================================================================================
 //
+// å…¨å±€æ¸¸æˆç®¡ç†å¯¹è±¡
 //
-CGameMain		g_GameMain;	
-// s2
+//=================================================================================
+CGameMain g_GameMain;
+
+//=================================================================================
+//
+// å¸¸é‡å®šä¹‰ - è®¡ç®—æ–¹å—çš„èµ·å§‹ä½ç½®å’Œå¤§å°
+//
+//=================================================================================
 const float CGameMain::m_fBlockSize = 18.75f;
 const float CGameMain::m_fBlockStartX = -40.625f;
 const float CGameMain::m_fBlockStartY = -28.125f;
 
-//==============================================================================
+//=================================================================================
 //
-// ´óÌåµÄ³ÌĞòÁ÷³ÌÎª£ºGameMainLoopº¯ÊıÎªÖ÷Ñ­»·º¯Êı£¬ÔÚÒıÇæÃ¿Ö¡Ë¢ĞÂÆÁÄ»Í¼ÏñÖ®ºó£¬¶¼»á±»µ÷ÓÃÒ»´Î¡£
-
-//==============================================================================
+// æ„é€ å‡½æ•° - åˆå§‹åŒ–æ¸¸æˆçŠ¶æ€å’Œç²¾çµ
 //
-// ¹¹Ôìº¯Êı
+//=================================================================================
 CGameMain::CGameMain()
 {
-	m_iGameState			=	0;
-	// s1
-	m_spGameBegin = new CSprite("GameBegin");
+    m_iGameState = 0;
+    m_spGameBegin = new CSprite("GameBegin");
 }
-//==============================================================================
+
+//=================================================================================
 //
-// Îö¹¹º¯Êı
+// ææ„å‡½æ•°
+//
+//=================================================================================
 CGameMain::~CGameMain()
 {
 }
 
-//==============================================================================
+//=================================================================================
 //
-// ÓÎÏ·Ö÷Ñ­»·£¬´Ëº¯Êı½«±»²»Í£µÄµ÷ÓÃ£¬ÒıÇæÃ¿Ë¢ĞÂÒ»´ÎÆÁÄ»£¬´Ëº¯Êı¼´±»µ÷ÓÃÒ»´Î
-// ÓÃÒÔ´¦ÀíÓÎÏ·µÄ¿ªÊ¼¡¢½øĞĞÖĞ¡¢½áÊøµÈ¸÷ÖÖ×´Ì¬. 
-// º¯Êı²ÎÊıfDeltaTime : ÉÏ´Îµ÷ÓÃ±¾º¯Êıµ½´Ë´Îµ÷ÓÃ±¾º¯ÊıµÄÊ±¼ä¼ä¸ô£¬µ¥Î»£ºÃë
-void CGameMain::GameMainLoop( float	fDeltaTime )
+// æ¸¸æˆä¸»å¾ªç¯
+//  - å¤„ç†æ¸¸æˆåˆå§‹åŒ–ã€è¿è¡Œå’Œç»“æŸçŠ¶æ€
+//
+//=================================================================================
+void CGameMain::GameMainLoop(float fDeltaTime)
 {
-	switch( GetGameState() )
-	{
-		// ³õÊ¼»¯ÓÎÏ·£¬Çå¿ÕÉÏÒ»¾ÖÏà¹ØÊı¾İ
-	case 1:
-		{
-			GameInit();
-			SetGameState(2); // ³õÊ¼»¯Ö®ºó£¬½«ÓÎÏ·×´Ì¬ÉèÖÃÎª½øĞĞÖĞ
-		}
-		break;
-
-		// ÓÎÏ·½øĞĞÖĞ£¬´¦Àí¸÷ÖÖÓÎÏ·Âß¼­
-	case 2:
-		{
-			// TODO ĞŞ¸Ä´Ë´¦ÓÎÏ·Ñ­»·Ìõ¼ş£¬Íê³ÉÕıÈ·ÓÎÏ·Âß¼­
-			if (!IsGameWin()) {
-				GameRun( fDeltaTime );
-			}
-			else // ÓÎÏ·½áÊø¡£µ÷ÓÃÓÎÏ·½áËãº¯Êı£¬²¢°ÑÓÎÏ·×´Ì¬ĞŞ¸ÄÎª½áÊø×´Ì¬
-			{				
-				SetGameState(0);
-				GameEnd();
-			}
-		}
-		break;
-
-		// ÓÎÏ·½áÊø/µÈ´ı°´¿Õ¸ñ¼ü¿ªÊ¼
-	case 0:
-	default:
-		break;
-	};
+    switch (GetGameState())
+    {
+        case 1:
+            GameInit();
+            SetGameState(2);
+            break;
+        case 2:
+            if (!IsGameWin())
+            {
+                GameRun(fDeltaTime);
+            }
+            else
+            {
+                SetGameState(0);
+                GameEnd();
+            }
+            break;
+        default:
+            break;
+    }
 }
-//=============================================================================
+
+//=================================================================================
 //
-// Ã¿¾Ö¿ªÊ¼Ç°½øĞĞ³õÊ¼»¯£¬Çå¿ÕÉÏÒ»¾ÖÏà¹ØÊı¾İ
+// æ¸¸æˆåˆå§‹åŒ–
+//  - ç”Ÿæˆå¹¶æ‰“ä¹±æ‹¼å›¾æ–¹å—
+//
+//=================================================================================
 void CGameMain::GameInit()
 {
-	// s2 ³õÊ¼»¯·½¿éÊı¾İ
-	int iLoopX = 0, iLoopY = 0, iLoop = 0;
-	int iOneIndex = 0, iRandIndex = 0;
-	int iDataCount = BLOCK_COUNT * BLOCK_COUNT - 1;
-	int iRandData[BLOCK_COUNT * BLOCK_COUNT - 1] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-	// s2 ±éÀú¶şÎ¬Êı×é²¢Ëæ»ú³õÊ¼»¯·½¿é
-	for (iLoopY = 0; iLoopY < BLOCK_COUNT; iLoopY++) {
-		for (iLoopX = 0; iLoopX < BLOCK_COUNT; iLoopX++) {
-			iOneIndex = XYToOneIndex(iLoopX, iLoopY);
-        
-			// Éè¶¨¿ÕÎ»
-			if (iLoopX == BLOCK_COUNT - 1 && iLoopY == BLOCK_COUNT - 1) {
-				m_iBlockState[iLoopY][iLoopX] = 0;
-				m_spBlock[iOneIndex] = new CSprite("NULL");
-			} else {
-				// Ëæ»úÑ¡ÔñÒ»¸öÎ´Ê¹ÓÃµÄÊıÖµ
-				iRandIndex = CSystem::RandomRange(0, iDataCount - 1);
-				m_iBlockState[iLoopY][iLoopX] = iRandData[iRandIndex];
-				char* tmpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[iLoopY][iLoopX]);
-				m_spBlock[iOneIndex] = new CSprite(tmpName);
-				MoveSpriteToBlock(m_spBlock[iOneIndex], iLoopX, iLoopY);
-            
-				// ÒÆ¶¯Ê£ÓàÊı¾İ£¬·ÀÖ¹ÖØ¸´
-				for (iLoop = iRandIndex; iLoop < iDataCount - 1; iLoop++) {
-					iRandData[iLoop] = iRandData[iLoop + 1];
-				}
-				iDataCount--;
-			}
-		}
-	}
-}
-//=============================================================================
-//
-// Ã¿¾ÖÓÎÏ·½øĞĞÖĞ
-void CGameMain::GameRun( float fDeltaTime )
-{
-}
-//=============================================================================
-//
-// ±¾¾ÖÓÎÏ·½áÊø
-void CGameMain::GameEnd()
-{
-	// ÏÔÊ¾ÌáÊ¾¿ªÊ¼ÎÄ×Ö
-	m_spGameBegin->SetSpriteVisible(1);
-}
-//=============================================================================
-//
-// s1
-void CGameMain::OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress) {
-  if (iKey == KEY_SPACE && m_iGameState == 0) {
-      m_iGameState = 1; // ½øÈëÓÎÏ·×´Ì¬
-      m_spGameBegin->SetSpriteVisible(false); // Òş²Ø "¿Õ¸ñ¿ªÊ¼" ¾«Áé
-  }
-}
-//=============================================================================
-//
-// s2 Ë÷Òı×ª»»
-int CGameMain::XYToOneIndex(const int iIndexX, const int iIndexY) {
-    return (iIndexY * BLOCK_COUNT + iIndexX);
-}
-//=============================================================================
-//
-// s2 ÒÆ¶¯¾«Áéµ½Ö¸¶¨Î»ÖÃ
-void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, const int iIndexX, const int iIndexY) {
-   float fPosX = m_fBlockStartX + iIndexX * m_fBlockSize;
-   float fPosY = m_fBlockStartY + iIndexY * m_fBlockSize;
-   tmpSprite->SetSpritePosition(fPosX, fPosY);
-}
-//=============================================================================
-//
-// s3
-void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY) {
-    // Ö»´¦ÀíÓÎÏ·½øĞĞÖĞµÄÊó±êÏìÓ¦
-    if (m_iGameState != 2) return;
-
-    int iClickIndex = -1;
-
-    for (int iLoop = 0; iLoop < BLOCK_COUNT * BLOCK_COUNT; iLoop++) {
-        if (m_spBlock[iLoop]->GetName() == "NULL") continue;
-
-        if (m_spBlock[iLoop]->IsPointInSprite(fMouseX, fMouseY)) {
-            iClickIndex = iLoop;
-            break;
+    int iDataCount = BLOCK_COUNT * BLOCK_COUNT - 1;
+    int iRandData[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    
+    for (int y = 0; y < BLOCK_COUNT; y++)
+    {
+        for (int x = 0; x < BLOCK_COUNT; x++)
+        {
+            int index = XYToOneIndex(x, y);
+            if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1)
+            {
+                m_iBlockState[y][x] = 0;
+                m_spBlock[index] = new CSprite("NULL");
+            }
+            else
+            {
+                int randIdx = CSystem::RandomRange(0, iDataCount - 1);
+                m_iBlockState[y][x] = iRandData[randIdx];
+                char* spriteName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[y][x]);
+                m_spBlock[index] = new CSprite(spriteName);
+                MoveSpriteToBlock(m_spBlock[index], x, y);
+                
+                for (int i = randIdx; i < iDataCount - 1; i++)
+                    iRandData[i] = iRandData[i + 1];
+                iDataCount--;
+            }
         }
     }
-
-    if (iClickIndex == -1) return;
-
-    int iIndexX = OneIndexToX(iClickIndex);
-    int iIndexY = OneIndexToY(iClickIndex);
-    int iEmptyIndexX = -1, iEmptyIndexY = -1;
-
-    // ÅĞ¶ÏËÄ¸ö·½ÏòÊÇ·ñÓĞ¿ÕÎ»
-    if (iIndexX > 0 && m_iBlockState[iIndexY][iIndexX - 1] == 0) {    // left
-        iEmptyIndexX = iIndexX - 1;
-        iEmptyIndexY = iIndexY;
-    }
-    else if (iIndexX < BLOCK_COUNT - 1 && m_iBlockState[iIndexY][iIndexX + 1] == 0) {    // right
-        iEmptyIndexX = iIndexX + 1;
-        iEmptyIndexY = iIndexY;
-    }
-    else if (iIndexY > 0 && m_iBlockState[iIndexY - 1][iIndexX] == 0) {    // top
-        iEmptyIndexX = iIndexX;
-        iEmptyIndexY = iIndexY - 1;
-    }
-    else if (iIndexY < BLOCK_COUNT - 1 && m_iBlockState[iIndexY + 1][iIndexX] == 0) {    // bottom
-        iEmptyIndexX = iIndexX;
-        iEmptyIndexY = iIndexY + 1;
-    }
-
-    if (iEmptyIndexX == -1 || iEmptyIndexY == -1) return;
-
-    // ½»»»·½¿éÎ»ÖÃ
-    int tempState = m_iBlockState[iIndexY][iIndexX];
-    m_iBlockState[iIndexY][iIndexX] = m_iBlockState[iEmptyIndexY][iEmptyIndexX];
-    m_iBlockState[iEmptyIndexY][iEmptyIndexX] = tempState;
-
-    int iOneIndex = XYToOneIndex(iEmptyIndexX, iEmptyIndexY);
-    CSprite *tempBlock = m_spBlock[iClickIndex];
-    m_spBlock[iClickIndex] = m_spBlock[iOneIndex];
-    m_spBlock[iOneIndex] = tempBlock;
-
-    // ÒÆ¶¯·½¿éÖÁĞÂÎ»ÖÃ
-    MoveSpriteToBlock(m_spBlock[iOneIndex], iEmptyIndexX, iEmptyIndexY);
 }
-//=============================================================================
+
+//=================================================================================
 //
-// s3
-int CGameMain::OneIndexToX(const int iIndex) {
+// è¿è¡Œæ¸¸æˆ
+//
+//=================================================================================
+void CGameMain::GameRun(float fDeltaTime)
+{
+}
+
+//=================================================================================
+//
+// ç»“æŸæ¸¸æˆ
+//
+//=================================================================================
+void CGameMain::GameEnd()
+{
+    m_spGameBegin->SetSpriteVisible(1);
+}
+
+//=================================================================================
+//
+// å¤„ç†é”®ç›˜æŒ‰é”®
+//
+//=================================================================================
+void CGameMain::OnKeyDown(int iKey, bool iAltPress, bool iShiftPress, bool iCtrlPress)
+{
+    if (iKey == KEY_SPACE && m_iGameState == 0)
+    {
+        m_iGameState = 1;
+        m_spGameBegin->SetSpriteVisible(false);
+    }
+}
+
+//=================================================================================
+//
+// ç´¢å¼•è½¬æ¢
+//
+//=================================================================================
+int CGameMain::XYToOneIndex(int iIndexX, int iIndexY)
+{
+    return (iIndexY * BLOCK_COUNT + iIndexX);
+}
+
+int CGameMain::OneIndexToX(int iIndex)
+{
     return iIndex % BLOCK_COUNT;
 }
 
-int CGameMain::OneIndexToY(const int iIndex) {
+int CGameMain::OneIndexToY(int iIndex)
+{
     return iIndex / BLOCK_COUNT;
 }
-//=============================================================================
+
+//=================================================================================
 //
-// s4
-bool CGameMain::IsGameWin() {
-	int iLoopX = 0, iLoopY = 0;
-	int iResult = 1;
+// ç§»åŠ¨æ–¹å—åˆ°æŒ‡å®šä½ç½®
+//
+//=================================================================================
+void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, int iIndexX, int iIndexY)
+{
+    float fPosX = m_fBlockStartX + iIndexX * m_fBlockSize;
+    float fPosY = m_fBlockStartY + iIndexY * m_fBlockSize;
+    tmpSprite->SetSpritePosition(fPosX, fPosY);
+}
 
-	for (iLoopY = 0; iLoopY < BLOCK_COUNT; iLoopY++) {
-		for (iLoopX = 0; iLoopX < BLOCK_COUNT; iLoopX++) {
-			// ÅĞ¶ÏÊÇ·ñÎª×îºóÒ»¸öÎ»ÖÃ
-			if (iLoopX == BLOCK_COUNT - 1 && iLoopY == BLOCK_COUNT - 1) {
-				return (m_iBlockState[iLoopY][iLoopX] == 0) ? 1 : 0;
-			}
-        
-			// ÈôÖµ²»·ûºÏÔ¤ÆÚ£¬ÔòÓÎÏ·Î´Ê¤Àû
-			if (m_iBlockState[iLoopY][iLoopX] != iResult) {
-				return 0;
-			}
-        
-			iResult++;
-		}
-	}
-
-	return 1;
+//=================================================================================
+//
+// åˆ¤æ–­æ¸¸æˆæ˜¯å¦èƒœåˆ©
+//
+//=================================================================================
+bool CGameMain::IsGameWin()
+{
+    int expectedValue = 1;
+    for (int y = 0; y < BLOCK_COUNT; y++)
+    {
+        for (int x = 0; x < BLOCK_COUNT; x++)
+        {
+            if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1)
+                return (m_iBlockState[y][x] == 0);
+            if (m_iBlockState[y][x] != expectedValue++)
+                return false;
+        }
+    }
+    return true;
 }
