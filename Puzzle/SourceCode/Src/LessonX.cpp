@@ -195,3 +195,59 @@ bool CGameMain::IsGameWin()
     }
     return true;
 }
+
+//
+void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY) {
+    // 只处理游戏进行中的鼠标响应
+    if (m_iGameState != 2) return;
+
+    int iClickIndex = -1;
+
+  	// 获取鼠标点击的非空白格方块索引
+    for (int iLoop = 0; iLoop < BLOCK_COUNT * BLOCK_COUNT; iLoop++) {
+        if (m_spBlock[iLoop]->GetName() == "NULL") continue;
+        if (m_spBlock[iLoop]->IsPointInSprite(fMouseX, fMouseY)) {
+            iClickIndex = iLoop;
+            break;
+        }
+    }
+
+    if (iClickIndex == -1) return;
+
+  	// 获取一维索引对应的二维索引
+    int iIndexX = OneIndexToX(iClickIndex);
+    int iIndexY = OneIndexToY(iClickIndex);
+    int iEmptyIndexX = -1, iEmptyIndexY = -1;
+
+    // 判断四个方向是否有空位
+    if (iIndexX > 0 && m_iBlockState[iIndexY][iIndexX - 1] == 0) {    // left
+        iEmptyIndexX = iIndexX - 1;
+        iEmptyIndexY = iIndexY;
+    }
+    else if (iIndexX < BLOCK_COUNT - 1 && m_iBlockState[iIndexY][iIndexX + 1] == 0) {    // right
+        iEmptyIndexX = iIndexX + 1;
+        iEmptyIndexY = iIndexY;
+    }
+    else if (iIndexY > 0 && m_iBlockState[iIndexY - 1][iIndexX] == 0) {    // top
+        iEmptyIndexX = iIndexX;
+        iEmptyIndexY = iIndexY - 1;
+    }
+    else if (iIndexY < BLOCK_COUNT - 1 && m_iBlockState[iIndexY + 1][iIndexX] == 0) {    // bottom
+        iEmptyIndexX = iIndexX;
+        iEmptyIndexY = iIndexY + 1;
+    }
+		// 四个方向均无空位
+    if (iEmptyIndexX == -1 || iEmptyIndexY == -1) return;
+
+    // 更新矩阵状态
+    int tempState = m_iBlockState[iIndexY][iIndexX];
+    m_iBlockState[iIndexY][iIndexX] = m_iBlockState[iEmptyIndexY][iEmptyIndexX];
+    m_iBlockState[iEmptyIndexY][iEmptyIndexX] = tempState;
+		// 更新方块索引
+    int iOneIndex = XYToOneIndex(iEmptyIndexX, iEmptyIndexY);
+    CSprite *tempBlock = m_spBlock[iClickIndex];
+    m_spBlock[iClickIndex] = m_spBlock[iOneIndex];
+    m_spBlock[iOneIndex] = tempBlock;
+    // 移动方块至新位置，重新渲染
+    MoveSpriteToBlock(m_spBlock[iOneIndex], iEmptyIndexX, iEmptyIndexY);
+}

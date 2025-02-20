@@ -1,7 +1,7 @@
-//-------------------------- 2/19/2025 -- 11:27:16 -----
+//-------------------------- 2/20/2025 -- 09:35:55 -----
 Processor Init:
    Intel (unknown, Pentium Pro/II/III family), ~2.40 Ghz
-     (timed at roughly 2.39 Ghz)
+     (timed at roughly 2.42 Ghz)
    FPU detected
    MMX detected
    SSE detected
@@ -114,6 +114,7 @@ Loading compiled script E:/repos/15puzzle-funcode/Puzzle/Bin/common/gameScripts/
 FunCode (v1.7.5) initialized...
 Loading compiled script E:/repos/15puzzle-funcode/Puzzle/Bin/game/managed/datablocks.cs.
 Loading compiled script E:/repos/15puzzle-funcode/Puzzle/Bin/game/managed/persistent.cs.
+Compiling E:/repos/15puzzle-funcode/Puzzle/Bin/game/managed/brushes.cs...
 Loading compiled script E:/repos/15puzzle-funcode/Puzzle/Bin/game/managed/brushes.cs.
 Loading compiled script E:/repos/15puzzle-funcode/Puzzle/Bin/game/gameScripts/datablocks.cs.
 Loading compiled script E:/repos/15puzzle-funcode/Puzzle/Bin/game/gameScripts/guiProfiles.cs.
