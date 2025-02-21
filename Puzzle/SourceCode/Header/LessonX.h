@@ -60,7 +60,7 @@ public :
     int XYToOneIndex(const int iIndexX, const int iIndexY);
     // 索引转换 (一维索引 -> 二维X坐标)
     int OneIndexToX(const int iIndex);
-	// 索引转换 (一维索引 -> Y坐标)
+	// 索引转换 (一维索引 -> 二维Y坐标)
     int OneIndexToY(const int iIndex);
     // 移动精灵到指定的方块位置
     void MoveSpriteToBlock(CSprite* tmpSprite, const int iIndexX, const int iIndexY);
@@ -77,13 +77,13 @@ private :
     int m_iGameState; 
     // "空格开始"精灵
     CSprite *m_spGameBegin;
-    // 4x4 位置参数
+    // 4x4 矩阵位置参数
 	static const float m_fBlockSize;   // 方块大小
     static const float m_fBlockStartX; // 方块起始X坐标
     static const float m_fBlockStartY; // 方块起始Y坐标
     // 方块状态矩阵
     int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT];
-    // 方块精灵数组
+    // 方块数组
     CSprite *m_spBlock[BLOCK_COUNT * BLOCK_COUNT];
 };
 

@@ -43,11 +43,13 @@
 在 `LessonX.h` 文件中，声明“空格开始”精灵变量，并定义 `OnKeyDown` 函数：
 
 ```cpp
-CSprite *m_spGameBegin; // "空格开始"精灵
+    // "空格开始"精灵
+    CSprite *m_spGameBegin;
 ```
 
 ```cpp
-void OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress);
+    // 处理键盘按键
+    void OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress);
 ```
 
 ##### 2. 初始化“空格开始”精灵
@@ -61,7 +63,16 @@ m_spGameBegin = new CSprite("GameBegin");
 在 `LessonX.cpp` 末尾添加 `OnKeyDown` 函数的定义：
 
 ```cpp
-void CGameMain::OnKeyDown(const int iKey, const bool bAltPress, const bool bShiftPress, const bool bCtrlPress) {
+//===================================================================
+// NAME        : OnKeyDown
+//
+// DESCRIPTION : 响应键盘按键。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+void CGameMain::OnKeyDown(int iKey, bool iAltPress, bool iShiftPress, bool iCtrlPress)
+{
+    
 }
 ```
 
@@ -72,10 +83,11 @@ void CGameMain::OnKeyDown(const int iKey, const bool bAltPress, const bool bShif
 - 在 `OnKeyDown` 函数中添加以下代码：
 
 ```cpp
-if (iKey == KEY_SPACE && m_iGameState == 0) {
-    m_iGameState = 1; // 进入游戏状态
-    m_spGameBegin->SetSpriteVisible(false); // 隐藏"空格开始"精灵
-}
+	// 按下空格键且游戏未开始
+    if (iKey == KEY_SPACE && m_iGameState == 0) {
+		SetGameState(1);						// 进入游戏状态
+        m_spGameBegin->SetSpriteVisible(false);	// 隐藏"空格开始"精灵
+    }
 ```
 
 ##### 4. 绑定键盘输入处理
@@ -85,7 +97,8 @@ if (iKey == KEY_SPACE && m_iGameState == 0) {
 在 `OnKeyDown` 调用处添加以下代码：
 
 ```cpp
-g_GameMain.OnKeyDown(iKey, bAltPress, bShiftPress, bCtrlPress);
+    // 响应键盘按键事件
+	g_GameMain.OnKeyDown(iKey, bAltPress, bShiftPress, bCtrlPress);
 ```
 
 #### 【实验总结】
@@ -115,22 +128,30 @@ g_GameMain.OnKeyDown(iKey, bAltPress, bShiftPress, bCtrlPress);
 在 `LessonX.h` 头文件中，声明以下变量：
 
 ```cpp
-static const float m_fBlockStartX;
-static const float m_fBlockStartY;
-static const float m_fBlockSize;
-int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT];
-CSprite *m_spBlock[BLOCK_COUNT * BLOCK_COUNT];
+    // 4x4 矩阵位置参数
+	static const float m_fBlockSize;   // 方块大小
+    static const float m_fBlockStartX; // 方块起始X坐标
+    static const float m_fBlockStartY; // 方块起始Y坐标
+    // 方块状态矩阵
+    int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT];
+    // 方块数组
+    CSprite *m_spBlock[BLOCK_COUNT * BLOCK_COUNT];
 ```
 
 添加 `BLOCK_COUNT` 宏定义：
 
 ```cpp
-#define BLOCK_COUNT 4 // 4x4 矩阵方块
+// defines
+//------------------------------
+#define BLOCK_COUNT 4	// 定义游戏方块的数量 (4x4 矩阵)
 ```
 
 ##### 2. 在 `LessonX.cpp` 定义常量变量
 
 ```cpp
+// constants
+//------------------------------
+// 计算方块的起始位置和大小
 const float CGameMain::m_fBlockSize = 18.75f;
 const float CGameMain::m_fBlockStartX = -40.625f;
 const float CGameMain::m_fBlockStartY = -28.125f;
@@ -139,10 +160,11 @@ const float CGameMain::m_fBlockStartY = -28.125f;
 ##### 3. 在 `GameInit` 中初始化方块数据
 
 ```cpp
-int iLoopX = 0, iLoopY = 0, iLoop = 0;
-int iOneIndex = 0, iRandIndex = 0;
-int iDataCount = BLOCK_COUNT * BLOCK_COUNT - 1;
-int iRandData[iDataCount] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    int iDataCount = BLOCK_COUNT*BLOCK_COUNT - 1;
+    int iRandData[BLOCK_COUNT*BLOCK_COUNT-1];
+	for (int i = 0; i < BLOCK_COUNT*BLOCK_COUNT-1; ++i) {
+		iRandData[i] = i + 1;
+	}	// 填充随机数据
 ```
 
 ##### 4. 定义索引转换函数
@@ -150,13 +172,22 @@ int iRandData[iDataCount] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 在 `LessonX.h` 中声明：
 
 ```cpp
-int XYToOneIndex(const int iIndexX, const int iIndexY);
+    // 索引转换 (二维坐标 -> 一维索引)
+    int XYToOneIndex(const int iIndexX, const int iIndexY);
 ```
 
 在 `LessonX.cpp` 实现：
 
 ```cpp
-int CGameMain::XYToOneIndex(const int iIndexX, const int iIndexY) {
+//===================================================================
+// NAME        : XYToOneIndex
+//
+// DESCRIPTION : 索引转换 (二维坐标 -> 一维索引)。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+int CGameMain::XYToOneIndex(int iIndexX, int iIndexY)
+{
     return (iIndexY * BLOCK_COUNT + iIndexX);
 }
 ```
@@ -164,28 +195,27 @@ int CGameMain::XYToOneIndex(const int iIndexX, const int iIndexY) {
 ##### 5. 遍历二维数组并随机初始化方块
 
 ```cpp
-for (iLoopY = 0; iLoopY < BLOCK_COUNT; iLoopY++) {	// line: Y
-    for (iLoopX = 0; iLoopX < BLOCK_COUNT; iLoopX++) {	// row: X
-        iOneIndex = XYToOneIndex(iLoopX, iLoopY);	// idx of m_spBlock
-        // 设定空位
-        if (iLoopX == BLOCK_COUNT - 1 && iLoopY == BLOCK_COUNT - 1) {
-            m_iBlockState[iLoopY][iLoopX] = 0;
-            m_spBlock[iOneIndex] = new CSprite("NULL");
-        } else {
-            // 随机选择一个未使用的数值
-            iRandIndex = CSystem::RandomRange(0, iDataCount - 1);	// [0, 14]
-            m_iBlockState[iLoopY][iLoopX] = iRandData[iRandIndex];
-            char *tmpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[iLoopY][iLoopX]);
-            m_spBlock[iOneIndex] = new CSprite(tmpName);	// bind sprite
-            MoveSpriteToBlock(m_spBlock[iOneIndex], iLoopX, iLoopY);	// move sprite
-            // 移动剩余数据，防止重复
-            for (iLoop = iRandIndex; iLoop < iDataCount - 1; iLoop++) {
-                iRandData[iLoop] = iRandData[iLoop + 1];
+    // 遍历二维数组并随机初始化方块
+    for (int y = 0; y < BLOCK_COUNT; ++y) {
+        for (int x = 0; x < BLOCK_COUNT; ++x) {
+            int iIdx = XYToOneIndex(x, y);
+			// 配置空白方块
+            if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1) {
+                m_iBlockState[y][x] = 0;
+                m_spBlock[iIdx] = new CSprite("NULL");
+            } else {
+                int randIdx = CSystem::RandomRange(0, iDataCount - 1);	// 随机选择一个未使用的数值
+                m_iBlockState[y][x] = iRandData[randIdx];	// 设置随机序号
+                char *szSpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[y][x]);
+                m_spBlock[iIdx] = new CSprite(szSpName);	// 匹配精灵方块
+                MoveSpriteToBlock(m_spBlock[iIdx], x, y);	// 渲染精灵方块
+                // 移动剩余数据，防止重复
+                for (int i = randIdx; i < iDataCount - 1; ++i)
+                    iRandData[i] = iRandData[i + 1];
+                iDataCount--;
             }
-            iDataCount--;
         }
     }
-}
 ```
 
 ##### 6. 定义移动精灵到指定位置的函数
@@ -193,16 +223,25 @@ for (iLoopY = 0; iLoopY < BLOCK_COUNT; iLoopY++) {	// line: Y
 在 `LessonX.h` 中声明：
 
 ```cpp
-void MoveSpriteToBlock(CSprite *tmpSprite, const int iIndexX, const int iIndexY);
+    // 移动精灵到指定的方块位置
+    void MoveSpriteToBlock(CSprite* tmpSprite, const int iIndexX, const int iIndexY);
 ```
 
 在 `LessonX.cpp` 中实现：
 
 ```cpp
-void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, const int iIndexX, const int iIndexY) {
-   float fPosX = m_fBlockStartX + iIndexX * m_fBlockSize;
-   float fPosY = m_fBlockStartY + iIndexY * m_fBlockSize;
-   tmpSprite->SetSpritePosition(fPosX, fPosY);
+//===================================================================
+// NAME        : MoveSpriteToBlock
+//
+// DESCRIPTION : 移动精灵到指定方块位置。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+void CGameMain::MoveSpriteToBlock(CSprite *sp, int iIndexX, int iIndexY)
+{
+    float fPosX = m_fBlockStartX + iIndexX * m_fBlockSize;
+    float fPosY = m_fBlockStartY + iIndexY * m_fBlockSize;
+    sp->SetSpritePosition(fPosX, fPosY);
 }
 ```
 
@@ -231,7 +270,8 @@ void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, const int iIndexX, const i
 在 `LessonX.h` 中添加 `OnMouseClick` 函数声明：
 
 ```cpp
-void OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY);
+	// 处理鼠标点击
+    void OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY);
 ```
 
 ##### 2. 添加 `OnMouseClick` 函数定义
@@ -239,59 +279,68 @@ void OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY
 在 `LessonX.cpp` 中实现 `OnMouseClick`：
 
 ```cpp
+//===================================================================
+// NAME        : OnMouseClick
+//
+// DESCRIPTION : 响应鼠标点击。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY) {
-    // 只处理游戏进行中的鼠标响应
+	// 只处理游戏进行中的鼠标响应
     if (m_iGameState != 2) return;
-
-    int iClickIndex = -1;
-
-  	// 获取鼠标点击的非空白格方块索引
+	// 初始化鼠标点击的方块索引
+    int iClickIdx = -1;
+  	// 获取鼠标点击的非空白方块索引
     for (int iLoop = 0; iLoop < BLOCK_COUNT * BLOCK_COUNT; iLoop++) {
         if (m_spBlock[iLoop]->GetName() == "NULL") continue;
         if (m_spBlock[iLoop]->IsPointInSprite(fMouseX, fMouseY)) {
-            iClickIndex = iLoop;
+            iClickIdx = iLoop;
             break;
         }
     }
-
-    if (iClickIndex == -1) return;
-
-  	// 获取一维索引对应的二维索引
-    int iIndexX = OneIndexToX(iClickIndex);
-    int iIndexY = OneIndexToY(iClickIndex);
-    int iEmptyIndexX = -1, iEmptyIndexY = -1;
-
-    // 判断四个方向是否有空位
-    if (iIndexX > 0 && m_iBlockState[iIndexY][iIndexX - 1] == 0) {    // left
-        iEmptyIndexX = iIndexX - 1;
-        iEmptyIndexY = iIndexY;
+	// 未获取到对应索引
+    if (iClickIdx == -1) return;
+  	// 获取一维索引对应的二维坐标
+    int iIdxX = OneIndexToX(iClickIdx);
+    int iIdxY = OneIndexToY(iClickIdx);
+	// 初始化空白方块坐标
+    int iEmptyIdxX = -1, iEmptyIdxY = -1;
+	// 判断是否有相邻的空白方块
+    if (iIdxX > 0 && m_iBlockState[iIdxY][iIdxX - 1] == 0) {
+		 // left
+        iEmptyIdxX = iIdxX - 1;
+        iEmptyIdxY = iIdxY;
     }
-    else if (iIndexX < BLOCK_COUNT - 1 && m_iBlockState[iIndexY][iIndexX + 1] == 0) {    // right
-        iEmptyIndexX = iIndexX + 1;
-        iEmptyIndexY = iIndexY;
+    else if (iIdxX < BLOCK_COUNT - 1 && m_iBlockState[iIdxY][iIdxX + 1] == 0) {
+		 // right
+        iEmptyIdxX = iIdxX + 1;
+        iEmptyIdxY = iIdxY;
     }
-    else if (iIndexY > 0 && m_iBlockState[iIndexY - 1][iIndexX] == 0) {    // top
-        iEmptyIndexX = iIndexX;
-        iEmptyIndexY = iIndexY - 1;
+    else if (iIdxY > 0 && m_iBlockState[iIdxY - 1][iIdxX] == 0) {
+		 // top
+        iEmptyIdxX = iIdxX;
+        iEmptyIdxY = iIdxY - 1;
     }
-    else if (iIndexY < BLOCK_COUNT - 1 && m_iBlockState[iIndexY + 1][iIndexX] == 0) {    // bottom
-        iEmptyIndexX = iIndexX;
-        iEmptyIndexY = iIndexY + 1;
+    else if (iIdxY < BLOCK_COUNT - 1 && m_iBlockState[iIdxY + 1][iIdxX] == 0) {
+		// bottom
+        iEmptyIdxX = iIdxX;
+        iEmptyIdxY = iIdxY + 1;
     }
-		// 四个方向均无空位
-    if (iEmptyIndexX == -1 || iEmptyIndexY == -1) return;
+	// 无法找到相邻的空白方块
+    if (iEmptyIdxX == -1 || iEmptyIdxY == -1) return;
 
     // 更新矩阵状态
-    int tempState = m_iBlockState[iIndexY][iIndexX];
-    m_iBlockState[iIndexY][iIndexX] = m_iBlockState[iEmptyIndexY][iEmptyIndexX];
-    m_iBlockState[iEmptyIndexY][iEmptyIndexX] = tempState;
-		// 更新方块索引
-    int iOneIndex = XYToOneIndex(iEmptyIndexX, iEmptyIndexY);
-    CSprite *tempBlock = m_spBlock[iClickIndex];
-    m_spBlock[iClickIndex] = m_spBlock[iOneIndex];
-    m_spBlock[iOneIndex] = tempBlock;
+    int tempState = m_iBlockState[iIdxY][iIdxX];
+    m_iBlockState[iIdxY][iIdxX] = m_iBlockState[iEmptyIdxY][iEmptyIdxX];
+    m_iBlockState[iEmptyIdxY][iEmptyIdxX] = tempState;
+	// 更新方块索引
+    int iOneIdx = XYToOneIndex(iEmptyIdxX, iEmptyIdxY);
+    CSprite *spTmp = m_spBlock[iClickIdx];
+    m_spBlock[iClickIdx] = m_spBlock[iOneIdx];
+    m_spBlock[iOneIdx] = spTmp;
     // 移动方块至新位置，重新渲染
-    MoveSpriteToBlock(m_spBlock[iOneIndex], iEmptyIndexX, iEmptyIndexY);
+    MoveSpriteToBlock(m_spBlock[iOneIdx], iEmptyIdxX, iEmptyIdxY);
 }
 ```
 
@@ -300,26 +349,45 @@ void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const fl
 在 `LessonX.h` 中声明：
 
 ```cpp
-int OneIndexToX(const int iIndex);
-int OneIndexToY(const int iIndex);
+    // 索引转换 (一维索引 -> 二维X坐标)
+    int OneIndexToX(const int iIndex);
+	// 索引转换 (一维索引 -> 二维Y坐标)
+    int OneIndexToY(const int iIndex);
 ```
 
 在 `LessonX.cpp` 中实现：
 
 ```cpp
-int CGameMain::OneIndexToX(const int iIndex) {
-    return iIndex % BLOCK_COUNT;
+//===================================================================
+// NAME        : OneIndexToX
+//
+// DESCRIPTION : 索引转换 (一维索引 -> 二维X坐标)。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+int CGameMain::OneIndexToX(int iIndex)
+{
+    return (iIndex % BLOCK_COUNT);
 }
 
-int CGameMain::OneIndexToY(const int iIndex) {
-    return iIndex / BLOCK_COUNT;
+//===================================================================
+// NAME        : OneIndexToY
+//
+// DESCRIPTION : 索引转换 (一维索引 -> 二维Y坐标)。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+int CGameMain::OneIndexToY(int iIndex)
+{
+    return (iIndex / BLOCK_COUNT);
 }
 ```
 
 ##### 4. 在 `Main.cpp` 处理鼠标点击事件
 
 ```cpp
-g_GameMain.OnMouseClick(iMouseType, fMouseX, fMouseY);
+    // 响应鼠标点击事件
+    g_GameMain.OnMouseClick(iMouseType, fMouseX, fMouseY);
 ```
 
 #### 【实验总结】
@@ -346,7 +414,8 @@ g_GameMain.OnMouseClick(iMouseType, fMouseX, fMouseY);
 在 `LessonX.h` 中添加自定义的判断是否胜利的函数 `IsGameWin` 声明：
 
 ```cpp
-bool IsGameWin();
+    // 判断游戏是否获胜
+    bool IsGameWin();
 ```
 
 ##### 2. 添加 IsGameWin 函数定义
@@ -354,8 +423,16 @@ bool IsGameWin();
 在 `LessonX.cpp` 中，添加 `IsGameWin` 函数定义。在文件末尾添加如下代码：
 
 ```cpp
-bool CGameMain::IsGameWin() {
-    // 待实现逻辑
+//===================================================================
+// NAME        : IsGameWin
+//
+// DESCRIPTION : 判断游戏是否胜利。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+bool CGameMain::IsGameWin()
+{
+    
 }
 ```
 
@@ -370,26 +447,20 @@ bool CGameMain::IsGameWin() {
 在 `IsGameWin` 函数内添加如下代码：
 
 ```cpp
-int iLoopX = 0, iLoopY = 0;
-int iResult = 1;
+    int iSN = 1;	// 精灵方块索引
 
-for (iLoopY = 0; iLoopY < BLOCK_COUNT; iLoopY++) {
-    for (iLoopX = 0; iLoopX < BLOCK_COUNT; iLoopX++) {
-        // 判断是否为最后一个位置
-        if (iLoopX == BLOCK_COUNT - 1 && iLoopY == BLOCK_COUNT - 1) {
-            return (m_iBlockState[iLoopY][iLoopX] == 0) ? 1 : 0;
+    for (int y = 0; y < BLOCK_COUNT; ++y) {
+        for (int x = 0; x < BLOCK_COUNT; ++x) {
+			// 判断最后一个位置是否是空白方块
+            if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1)
+                return (m_iBlockState[y][x] == 0);
+			// 判断排列，若值不符合预期，则游戏未胜利
+            if (m_iBlockState[y][x] != iSN++)
+                return false;
         }
-        
-        // 若值不符合预期，则游戏未胜利
-        if (m_iBlockState[iLoopY][iLoopX] != iResult) {
-            return 0;
-        }
-        
-        iResult++;
     }
-}
 
-return 1;
+    return true;
 ```
 
 ##### 4. 在主循环中检测游戏胜利状态
@@ -399,7 +470,7 @@ return 1;
 
   ```cpp
   if (true) {
-      GameRun();
+      GameRun(fDeltaTime);
   }
   ```
 
@@ -407,7 +478,7 @@ return 1;
 
   ```cpp
   if (!IsGameWin()) {
-      GameRun( fDeltaTime );
+      GameRun(fDeltaTime);
   }
   ```
 
@@ -417,8 +488,8 @@ return 1;
 - 在 `GameEnd` 函数中添加以下代码，以显示游戏开始提示：
 
 ```cpp
-// 显示提示开始文字
-m_spGameBegin->SetSpriteVisible(1);
+	// 显示提示开始的“空格开始”精灵
+    m_spGameBegin->SetSpriteVisible(true);
 ```
 
 #### 【实验总结】

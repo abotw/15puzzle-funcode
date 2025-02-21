@@ -90,7 +90,8 @@ void CGameMain::GameInit()
 	for (int i = 0; i < BLOCK_COUNT*BLOCK_COUNT-1; ++i) {
 		iRandData[i] = i + 1;
 	}	// 填充随机数据
-    
+
+    // 遍历二维数组并随机初始化方块
     for (int y = 0; y < BLOCK_COUNT; ++y) {
         for (int x = 0; x < BLOCK_COUNT; ++x) {
             int iIdx = XYToOneIndex(x, y);
@@ -99,12 +100,12 @@ void CGameMain::GameInit()
                 m_iBlockState[y][x] = 0;
                 m_spBlock[iIdx] = new CSprite("NULL");
             } else {
-                int randIdx = CSystem::RandomRange(0, iDataCount - 1);	//	随机获取索引
+                int randIdx = CSystem::RandomRange(0, iDataCount - 1);	// 随机选择一个未使用的数值
                 m_iBlockState[y][x] = iRandData[randIdx];	// 设置随机序号
                 char *szSpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[y][x]);
                 m_spBlock[iIdx] = new CSprite(szSpName);	// 匹配精灵方块
                 MoveSpriteToBlock(m_spBlock[iIdx], x, y);	// 渲染精灵方块
-                // 删去已经选择的序号
+                // 移动剩余数据，防止重复
                 for (int i = randIdx; i < iDataCount - 1; ++i)
                     iRandData[i] = iRandData[i + 1];
                 iDataCount--;
@@ -134,6 +135,7 @@ void CGameMain::GameRun(float fDeltaTime)
 //===================================================================
 void CGameMain::GameEnd()
 {
+	// 显示提示开始的“空格开始”精灵
     m_spGameBegin->SetSpriteVisible(true);
 }
 
@@ -148,8 +150,8 @@ void CGameMain::OnKeyDown(int iKey, bool iAltPress, bool iShiftPress, bool iCtrl
 {
 	// 按下空格键且游戏未开始
     if (iKey == KEY_SPACE && m_iGameState == 0) {
-		SetGameState(1);
-        m_spGameBegin->SetSpriteVisible(false);
+		SetGameState(1);						// 进入游戏状态
+        m_spGameBegin->SetSpriteVisible(false);	// 隐藏"空格开始"精灵
     }
 }
 
@@ -276,15 +278,15 @@ void CGameMain::MoveSpriteToBlock(CSprite *sp, int iIndexX, int iIndexY)
 //===================================================================
 bool CGameMain::IsGameWin()
 {
-    int iIdx = 1;	// 精灵方块索引
+    int iSN = 1;	// 精灵方块索引
 
     for (int y = 0; y < BLOCK_COUNT; ++y) {
         for (int x = 0; x < BLOCK_COUNT; ++x) {
-			// 判断空方块状态
+			// 判断最后一个位置是否是空白方块
             if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1)
                 return (m_iBlockState[y][x] == 0);
-			// 判断精灵方块的排列
-            if (m_iBlockState[y][x] != iIdx++)
+			// 判断排列，若值不符合预期，则游戏未胜利
+            if (m_iBlockState[y][x] != iSN++)
                 return false;
         }
     }
