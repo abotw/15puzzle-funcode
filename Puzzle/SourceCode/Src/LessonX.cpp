@@ -85,28 +85,27 @@ void CGameMain::GameMainLoop(float fDeltaTime)
 //===================================================================
 void CGameMain::GameInit()
 {
-    int iDataCount = BLOCK_COUNT * BLOCK_COUNT - 1;
-    int iRandData[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    int iDataCount = BLOCK_COUNT*BLOCK_COUNT - 1;
+    int iRandData[BLOCK_COUNT*BLOCK_COUNT-1];
+	for (int i = 0; i < BLOCK_COUNT*BLOCK_COUNT-1; ++i) {
+		iRandData[i] = i + 1;
+	}	// 填充随机数据
     
-    for (int y = 0; y < BLOCK_COUNT; y++)
-    {
-        for (int x = 0; x < BLOCK_COUNT; x++)
-        {
-            int index = XYToOneIndex(x, y);
-            if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1)
-            {
+    for (int y = 0; y < BLOCK_COUNT; ++y) {
+        for (int x = 0; x < BLOCK_COUNT; ++x) {
+            int iIdx = XYToOneIndex(x, y);
+			// 配置空白方块
+            if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1) {
                 m_iBlockState[y][x] = 0;
-                m_spBlock[index] = new CSprite("NULL");
-            }
-            else
-            {
-                int randIdx = CSystem::RandomRange(0, iDataCount - 1);
-                m_iBlockState[y][x] = iRandData[randIdx];
-                char* spriteName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[y][x]);
-                m_spBlock[index] = new CSprite(spriteName);
-                MoveSpriteToBlock(m_spBlock[index], x, y);
-                
-                for (int i = randIdx; i < iDataCount - 1; i++)
+                m_spBlock[iIdx] = new CSprite("NULL");
+            } else {
+                int randIdx = CSystem::RandomRange(0, iDataCount - 1);	//	随机获取索引
+                m_iBlockState[y][x] = iRandData[randIdx];	// 设置随机序号
+                char *szSpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[y][x]);
+                m_spBlock[iIdx] = new CSprite(szSpName);	// 匹配精灵方块
+                MoveSpriteToBlock(m_spBlock[iIdx], x, y);	// 渲染精灵方块
+                // 删去已经选择的序号
+                for (int i = randIdx; i < iDataCount - 1; ++i)
                     iRandData[i] = iRandData[i + 1];
                 iDataCount--;
             }
@@ -135,7 +134,7 @@ void CGameMain::GameRun(float fDeltaTime)
 //===================================================================
 void CGameMain::GameEnd()
 {
-    m_spGameBegin->SetSpriteVisible(1);
+    m_spGameBegin->SetSpriteVisible(true);
 }
 
 //===================================================================
@@ -147,9 +146,9 @@ void CGameMain::GameEnd()
 //===================================================================
 void CGameMain::OnKeyDown(int iKey, bool iAltPress, bool iShiftPress, bool iCtrlPress)
 {
-    if (iKey == KEY_SPACE && m_iGameState == 0)
-    {
-        m_iGameState = 1;
+	// 按下空格键且游戏未开始
+    if (iKey == KEY_SPACE && m_iGameState == 0) {
+		SetGameState(1);
         m_spGameBegin->SetSpriteVisible(false);
     }
 }
@@ -162,58 +161,60 @@ void CGameMain::OnKeyDown(int iKey, bool iAltPress, bool iShiftPress, bool iCtrl
 // DATE        : 250221
 //===================================================================
 void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY) {
-    // 只处理游戏进行中的鼠标响应
+	// 只处理游戏进行中的鼠标响应
     if (m_iGameState != 2) return;
-
-    int iClickIndex = -1;
-
-  	// 获取鼠标点击的非空白格方块索引
+	// 初始化鼠标点击的方块索引
+    int iClickIdx = -1;
+  	// 获取鼠标点击的非空白方块索引
     for (int iLoop = 0; iLoop < BLOCK_COUNT * BLOCK_COUNT; iLoop++) {
         if (m_spBlock[iLoop]->GetName() == "NULL") continue;
         if (m_spBlock[iLoop]->IsPointInSprite(fMouseX, fMouseY)) {
-            iClickIndex = iLoop;
+            iClickIdx = iLoop;
             break;
         }
     }
-
-    if (iClickIndex == -1) return;
-
-  	// 获取一维索引对应的二维索引
-    int iIndexX = OneIndexToX(iClickIndex);
-    int iIndexY = OneIndexToY(iClickIndex);
-    int iEmptyIndexX = -1, iEmptyIndexY = -1;
-
-    // 判断四个方向是否有空位
-    if (iIndexX > 0 && m_iBlockState[iIndexY][iIndexX - 1] == 0) {    // left
-        iEmptyIndexX = iIndexX - 1;
-        iEmptyIndexY = iIndexY;
+	// 未获取到对应索引
+    if (iClickIdx == -1) return;
+  	// 获取一维索引对应的二维坐标
+    int iIdxX = OneIndexToX(iClickIdx);
+    int iIdxY = OneIndexToY(iClickIdx);
+	// 初始化空白方块坐标
+    int iEmptyIdxX = -1, iEmptyIdxY = -1;
+	// 判断是否有相邻的空白方块
+    if (iIdxX > 0 && m_iBlockState[iIdxY][iIdxX - 1] == 0) {
+		 // left
+        iEmptyIdxX = iIdxX - 1;
+        iEmptyIdxY = iIdxY;
     }
-    else if (iIndexX < BLOCK_COUNT - 1 && m_iBlockState[iIndexY][iIndexX + 1] == 0) {    // right
-        iEmptyIndexX = iIndexX + 1;
-        iEmptyIndexY = iIndexY;
+    else if (iIdxX < BLOCK_COUNT - 1 && m_iBlockState[iIdxY][iIdxX + 1] == 0) {
+		 // right
+        iEmptyIdxX = iIdxX + 1;
+        iEmptyIdxY = iIdxY;
     }
-    else if (iIndexY > 0 && m_iBlockState[iIndexY - 1][iIndexX] == 0) {    // top
-        iEmptyIndexX = iIndexX;
-        iEmptyIndexY = iIndexY - 1;
+    else if (iIdxY > 0 && m_iBlockState[iIdxY - 1][iIdxX] == 0) {
+		 // top
+        iEmptyIdxX = iIdxX;
+        iEmptyIdxY = iIdxY - 1;
     }
-    else if (iIndexY < BLOCK_COUNT - 1 && m_iBlockState[iIndexY + 1][iIndexX] == 0) {    // bottom
-        iEmptyIndexX = iIndexX;
-        iEmptyIndexY = iIndexY + 1;
+    else if (iIdxY < BLOCK_COUNT - 1 && m_iBlockState[iIdxY + 1][iIdxX] == 0) {
+		// bottom
+        iEmptyIdxX = iIdxX;
+        iEmptyIdxY = iIdxY + 1;
     }
-		// 四个方向均无空位
-    if (iEmptyIndexX == -1 || iEmptyIndexY == -1) return;
+	// 无法找到相邻的空白方块
+    if (iEmptyIdxX == -1 || iEmptyIdxY == -1) return;
 
     // 更新矩阵状态
-    int tempState = m_iBlockState[iIndexY][iIndexX];
-    m_iBlockState[iIndexY][iIndexX] = m_iBlockState[iEmptyIndexY][iEmptyIndexX];
-    m_iBlockState[iEmptyIndexY][iEmptyIndexX] = tempState;
-		// 更新方块索引
-    int iOneIndex = XYToOneIndex(iEmptyIndexX, iEmptyIndexY);
-    CSprite *tempBlock = m_spBlock[iClickIndex];
-    m_spBlock[iClickIndex] = m_spBlock[iOneIndex];
-    m_spBlock[iOneIndex] = tempBlock;
+    int tempState = m_iBlockState[iIdxY][iIdxX];
+    m_iBlockState[iIdxY][iIdxX] = m_iBlockState[iEmptyIdxY][iEmptyIdxX];
+    m_iBlockState[iEmptyIdxY][iEmptyIdxX] = tempState;
+	// 更新方块索引
+    int iOneIdx = XYToOneIndex(iEmptyIdxX, iEmptyIdxY);
+    CSprite *spTmp = m_spBlock[iClickIdx];
+    m_spBlock[iClickIdx] = m_spBlock[iOneIdx];
+    m_spBlock[iOneIdx] = spTmp;
     // 移动方块至新位置，重新渲染
-    MoveSpriteToBlock(m_spBlock[iOneIndex], iEmptyIndexX, iEmptyIndexY);
+    MoveSpriteToBlock(m_spBlock[iOneIdx], iEmptyIdxX, iEmptyIdxY);
 }
 
 //===================================================================
@@ -237,7 +238,7 @@ int CGameMain::XYToOneIndex(int iIndexX, int iIndexY)
 //===================================================================
 int CGameMain::OneIndexToX(int iIndex)
 {
-    return iIndex % BLOCK_COUNT;
+    return (iIndex % BLOCK_COUNT);
 }
 
 //===================================================================
@@ -249,7 +250,7 @@ int CGameMain::OneIndexToX(int iIndex)
 //===================================================================
 int CGameMain::OneIndexToY(int iIndex)
 {
-    return iIndex / BLOCK_COUNT;
+    return (iIndex / BLOCK_COUNT);
 }
 
 //===================================================================
@@ -259,11 +260,11 @@ int CGameMain::OneIndexToY(int iIndex)
 // AUTHOR      : mql
 // DATE        : 250221
 //===================================================================
-void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, int iIndexX, int iIndexY)
+void CGameMain::MoveSpriteToBlock(CSprite *sp, int iIndexX, int iIndexY)
 {
     float fPosX = m_fBlockStartX + iIndexX * m_fBlockSize;
     float fPosY = m_fBlockStartY + iIndexY * m_fBlockSize;
-    tmpSprite->SetSpritePosition(fPosX, fPosY);
+    sp->SetSpritePosition(fPosX, fPosY);
 }
 
 //===================================================================
@@ -275,16 +276,18 @@ void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, int iIndexX, int iIndexY)
 //===================================================================
 bool CGameMain::IsGameWin()
 {
-    int expectedValue = 1;
-    for (int y = 0; y < BLOCK_COUNT; y++)
-    {
-        for (int x = 0; x < BLOCK_COUNT; x++)
-        {
+    int iIdx = 1;	// 精灵方块索引
+
+    for (int y = 0; y < BLOCK_COUNT; ++y) {
+        for (int x = 0; x < BLOCK_COUNT; ++x) {
+			// 判断空方块状态
             if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1)
                 return (m_iBlockState[y][x] == 0);
-            if (m_iBlockState[y][x] != expectedValue++)
+			// 判断精灵方块的排列
+            if (m_iBlockState[y][x] != iIdx++)
                 return false;
         }
     }
+
     return true;
 }
