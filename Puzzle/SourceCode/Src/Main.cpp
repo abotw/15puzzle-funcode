@@ -27,7 +27,7 @@ int PASCAL WinMain(HINSTANCE hInstance,
     // 初始化游戏引擎
     if (!CSystem::InitGameEngine(hInstance, lpCmdLine)) return 0;
     // 设置窗口标题
-    CSystem::SetWindowTitle("【15 Puzzle】by FunCode @mql");
+    CSystem::SetWindowTitle("[15 Puzzle] by FunCode @mql");
     // 引擎主循环，处理屏幕图像刷新等工作
 
     while (CSystem::EngineMainLoop()) {
@@ -96,7 +96,7 @@ void CSystem::OnKeyDown(const int iKey, const bool bAltPress, const bool bShiftP
 //===================================================================
 // NAME        : OnKeyUp
 //
-// DESCRIPTION : 监听键盘抬起。
+// DESCRIPTION : 监听键盘按键抬起。
 // AUTHOR      : mql
 // DATE        : 250221
 //===================================================================

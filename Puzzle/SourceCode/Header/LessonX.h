@@ -58,7 +58,7 @@ public :
 
     // 索引转换 (二维坐标 -> 一维索引)
     int XYToOneIndex(const int iIndexX, const int iIndexY);
-    // 索引转换 (一维索引 -> X坐标)
+    // 索引转换 (一维索引 -> 二维X坐标)
     int OneIndexToX(const int iIndex);
 	// 索引转换 (一维索引 -> Y坐标)
     int OneIndexToY(const int iIndex);

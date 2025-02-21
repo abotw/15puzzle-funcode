@@ -7,67 +7,66 @@
 // AUTHOR:             mql
 ///////////////////////////////////////////////////////////////////
 
+// includes
+//------------------------------
 #include <stdio.h>
 #include "CommonClass.h"
 #include "LessonX.h"
 
-//=================================================================================
-//
-// 全局游戏管理对象
-//
-//=================================================================================
-CGameMain g_GameMain;
+// global vars
+//------------------------------
+CGameMain g_GameMain;	// 游戏管理
 
-//=================================================================================
-//
-// 常量定义 - 计算方块的起始位置和大小
-//
-//=================================================================================
+// constants
+//------------------------------
+// 计算方块的起始位置和大小
 const float CGameMain::m_fBlockSize = 18.75f;
 const float CGameMain::m_fBlockStartX = -40.625f;
 const float CGameMain::m_fBlockStartY = -28.125f;
 
-//=================================================================================
+//===================================================================
+// NAME        : CGameMain
 //
-// 构造函数 - 初始化游戏状态和精灵
-//
-//=================================================================================
+// DESCRIPTION : 构造函数。初始化游戏状态和“空格开始”精灵。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 CGameMain::CGameMain()
 {
     m_iGameState = 0;
     m_spGameBegin = new CSprite("GameBegin");
 }
 
-//=================================================================================
+//===================================================================
+// NAME        : ~CGameMain
 //
-// 析构函数
-//
-//=================================================================================
+// DESCRIPTION : 析构函数。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 CGameMain::~CGameMain()
 {
+
 }
 
-//=================================================================================
+//===================================================================
+// NAME        : GameMainLoop
 //
-// 游戏主循环
-//  - 处理游戏初始化、运行和结束状态
-//
-//=================================================================================
+// DESCRIPTION : 游戏主循环。处理游戏初始化、运行和结束状态。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 void CGameMain::GameMainLoop(float fDeltaTime)
 {
-    switch (GetGameState())
-    {
+    switch (GetGameState()) {
         case 1:
             GameInit();
             SetGameState(2);
             break;
         case 2:
-            if (!IsGameWin())
-            {
+            if (!IsGameWin()) {
                 GameRun(fDeltaTime);
-            }
-            else
-            {
+            } else {
                 SetGameState(0);
                 GameEnd();
             }
@@ -77,12 +76,13 @@ void CGameMain::GameMainLoop(float fDeltaTime)
     }
 }
 
-//=================================================================================
+//===================================================================
+// NAME        : GameInit
 //
-// 游戏初始化
-//  - 生成并打乱拼图方块
-//
-//=================================================================================
+// DESCRIPTION : 游戏初始化。生成并打乱拼图方块。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 void CGameMain::GameInit()
 {
     int iDataCount = BLOCK_COUNT * BLOCK_COUNT - 1;
@@ -114,30 +114,37 @@ void CGameMain::GameInit()
     }
 }
 
-//=================================================================================
+//===================================================================
+// NAME        : GameRun
 //
-// 运行游戏
-//
-//=================================================================================
+// DESCRIPTION : 运行游戏。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 void CGameMain::GameRun(float fDeltaTime)
 {
+
 }
 
-//=================================================================================
+//===================================================================
+// NAME        : GameEnd
 //
-// 结束游戏
-//
-//=================================================================================
+// DESCRIPTION : 结束游戏。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 void CGameMain::GameEnd()
 {
     m_spGameBegin->SetSpriteVisible(1);
 }
 
-//=================================================================================
+//===================================================================
+// NAME        : OnKeyDown
 //
-// 处理键盘按键
-//
-//=================================================================================
+// DESCRIPTION : 响应键盘按键。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 void CGameMain::OnKeyDown(int iKey, bool iAltPress, bool iShiftPress, bool iCtrlPress)
 {
     if (iKey == KEY_SPACE && m_iGameState == 0)
@@ -147,43 +154,13 @@ void CGameMain::OnKeyDown(int iKey, bool iAltPress, bool iShiftPress, bool iCtrl
     }
 }
 
-//=================================================================================
+//===================================================================
+// NAME        : OnMouseClick
 //
-// 索引转换
-//
-//=================================================================================
-int CGameMain::XYToOneIndex(int iIndexX, int iIndexY)
-{
-    return (iIndexY * BLOCK_COUNT + iIndexX);
-}
-
-int CGameMain::OneIndexToX(int iIndex)
-{
-    return iIndex % BLOCK_COUNT;
-}
-
-int CGameMain::OneIndexToY(int iIndex)
-{
-    return iIndex / BLOCK_COUNT;
-}
-
-//=================================================================================
-//
-// 移动方块到指定位置
-//
-//=================================================================================
-void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, int iIndexX, int iIndexY)
-{
-    float fPosX = m_fBlockStartX + iIndexX * m_fBlockSize;
-    float fPosY = m_fBlockStartY + iIndexY * m_fBlockSize;
-    tmpSprite->SetSpritePosition(fPosX, fPosY);
-}
-
-//=================================================================================
-//
-// 处理鼠标按键
-//
-//=================================================================================
+// DESCRIPTION : 响应鼠标点击。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY) {
     // 只处理游戏进行中的鼠标响应
     if (m_iGameState != 2) return;
@@ -239,11 +216,63 @@ void CGameMain::OnMouseClick(const int iMouseType, const float fMouseX, const fl
     MoveSpriteToBlock(m_spBlock[iOneIndex], iEmptyIndexX, iEmptyIndexY);
 }
 
-//=================================================================================
+//===================================================================
+// NAME        : XYToOneIndex
 //
-// 判断游戏是否胜利
+// DESCRIPTION : 索引转换 (二维坐标 -> 一维索引)。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+int CGameMain::XYToOneIndex(int iIndexX, int iIndexY)
+{
+    return (iIndexY * BLOCK_COUNT + iIndexX);
+}
+
+//===================================================================
+// NAME        : OneIndexToX
 //
-//=================================================================================
+// DESCRIPTION : 索引转换 (一维索引 -> 二维X坐标)。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+int CGameMain::OneIndexToX(int iIndex)
+{
+    return iIndex % BLOCK_COUNT;
+}
+
+//===================================================================
+// NAME        : OneIndexToY
+//
+// DESCRIPTION : 索引转换 (一维索引 -> 二维Y坐标)。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+int CGameMain::OneIndexToY(int iIndex)
+{
+    return iIndex / BLOCK_COUNT;
+}
+
+//===================================================================
+// NAME        : MoveSpriteToBlock
+//
+// DESCRIPTION : 移动精灵到指定方块位置。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
+void CGameMain::MoveSpriteToBlock(CSprite *tmpSprite, int iIndexX, int iIndexY)
+{
+    float fPosX = m_fBlockStartX + iIndexX * m_fBlockSize;
+    float fPosY = m_fBlockStartY + iIndexY * m_fBlockSize;
+    tmpSprite->SetSpritePosition(fPosX, fPosY);
+}
+
+//===================================================================
+// NAME        : IsGameWin
+//
+// DESCRIPTION : 判断游戏是否胜利。
+// AUTHOR      : mql
+// DATE        : 250221
+//===================================================================
 bool CGameMain::IsGameWin()
 {
     int expectedValue = 1;
