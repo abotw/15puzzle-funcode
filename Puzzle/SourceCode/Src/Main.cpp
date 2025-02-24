@@ -89,7 +89,7 @@ void CSystem::OnMouseUp(const int iMouseType, const float fMouseX, const float f
 //===================================================================
 void CSystem::OnKeyDown(const int iKey, const bool bAltPress, const bool bShiftPress, const bool bCtrlPress)
 {
-    // 响应键盘按键事件
+	// 响应键盘按键事件
 	g_GameMain.OnKeyDown(iKey, bAltPress, bShiftPress, bCtrlPress);
 }
 

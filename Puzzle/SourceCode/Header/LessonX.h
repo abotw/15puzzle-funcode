@@ -18,7 +18,7 @@
 
 // defines
 //------------------------------
-#define BLOCK_COUNT 4	// 定义游戏方块的数量 (4x4 矩阵)
+#define BLOCK_COUNT 4	// 定义拼图的数量 (4x4 矩阵)
 
 //===================================================================
 // NAME        : CGameMain
@@ -51,9 +51,9 @@ public :
 	// 游戏结束
     void GameEnd();
 
-    // 处理键盘按键
+    // 处理键盘按键事件
     void OnKeyDown(const int iKey, const bool iAltPress, const bool iShiftPress, const bool iCtrlPress);
-	// 处理鼠标点击
+	// 处理鼠标点击事件
     void OnMouseClick(const int iMouseType, const float fMouseX, const float fMouseY);
 
     // 索引转换 (二维坐标 -> 一维索引)
@@ -62,8 +62,8 @@ public :
     int OneIndexToX(const int iIndex);
 	// 索引转换 (一维索引 -> 二维Y坐标)
     int OneIndexToY(const int iIndex);
-    // 移动精灵到指定的方块位置
-    void MoveSpriteToBlock(CSprite* tmpSprite, const int iIndexX, const int iIndexY);
+	// 移动拼图到指定位置
+	void MoveSpriteToBlock(CSprite* tmpSprite, const int iIndexX, const int iIndexY);
     // 判断游戏是否获胜
     bool IsGameWin();
 protected :
@@ -77,14 +77,14 @@ private :
     int m_iGameState; 
     // "空格开始"精灵
     CSprite *m_spGameBegin;
-    // 4x4 矩阵位置参数
-	static const float m_fBlockSize;   // 方块大小
-    static const float m_fBlockStartX; // 方块起始X坐标
-    static const float m_fBlockStartY; // 方块起始Y坐标
-    // 方块状态矩阵
-    int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT];
-    // 方块数组
-    CSprite *m_spBlock[BLOCK_COUNT * BLOCK_COUNT];
+	// 4x4 矩阵位置参数
+	static const float m_fBlockSize;   // 拼图大小
+	static const float m_fBlockStartX; // 拼图起始X坐标
+	static const float m_fBlockStartY; // 拼图起始Y坐标
+	// 拼图数组
+	CSprite *m_spBlock[BLOCK_COUNT * BLOCK_COUNT];
+	// 拼图状态矩阵
+	int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT];
 };
 
 extern CGameMain g_GameMain;	// 全局游戏管理对象
