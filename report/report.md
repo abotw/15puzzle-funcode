@@ -643,7 +643,163 @@ m_spGameBegin->SetSpriteVisible(true);
 
 ---
 
+由于进行了比较细致的问题分析，所以在调试过程中，除了输入错误，并没有其他大的调试问题。但是在完成游戏的开发后，遇到了 15 puzzle 算法可解性的问题。发现之前随机打乱的拼图，并不总是能够复原的。为了解决这一问题，就要对之前的随机打乱算法进行一些改进。
 
+通过查阅资料，首先厘清15拼图的可解性规则。
+
+### 3.1 15拼图的可解性规则
+
+15拼图只有在以下条件满足时才可解：
+
+-   逆序对数（Inversion Count）：
+    -   计算整个拼图的逆序对数（inversion count）。逆序对是指在一维展开的拼图状态中，较大的数字出现在较小数字前面的情况。
+    -   例如，在 `4×4` 拼图中，如果排列为 `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 14, 0]`，其中 `15` 出现在 `14` 之前，这是一个逆序对。
+    -   如果逆序数是偶数，则该拼图可解，否则不可解。
+-   空白块的行数位置：
+    -   需要计算空白块（0）的行号（从下往上数）。
+    -   在 4×4 拼图中：
+        -   如果行号是偶数，则逆序数必须是奇数（不可解）。
+        -   如果行号是奇数，则逆序数必须是偶数（可解）。
+
+在该游戏中，由于空白块固定在最后一行的最后一列，所以空白块的行号是计数，那么这个拼图当中，逆序对数必须是偶数。
+
+### 3.2 改进随机打乱算法
+
+#### 3.2.1 添加判断拼图可解性的函数
+
+在 `LessonX.h` 中声明：
+
+```cpp
+// 判断当前拼图是否可解
+bool IsSolvable(int puzzle[BLOCK_COUNT][BLOCK_COUNT]);
+```
+
+在 `LessonX.cpp` 中实现：
+
+```cpp
+//===================================================================
+// NAME        : IsSolvable
+//
+// DESCRIPTION : 判断当前拼图是否可解。
+// AUTHOR      : mql
+// DATE        : 250224
+//===================================================================
+bool CGameMain::IsSolvable(int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT])
+{
+    int iInversionCount = 0;
+    int iFlatPuzzle[BLOCK_COUNT * BLOCK_COUNT]; // 将 4x4 转换成一维数组
+    int iIdx = 0;
+    int iEmptyRow = 0;
+
+    // 转换拼图为一维数组，并记录空白块所在行号（从上往下数）
+    for (int y = 0; y < BLOCK_COUNT; ++y) {
+        for (int x = 0; x < BLOCK_COUNT; ++x) {
+            iFlatPuzzle[iIdx] = m_iBlockState[y][x];
+            if (m_iBlockState[y][x] == 0) {
+                iEmptyRow = y; // 记录空白块行号
+            }
+            iIdx++;
+        }
+    }
+
+    // 计算逆序数
+    for (int i = 0; i < BLOCK_COUNT * BLOCK_COUNT - 1; ++i) {
+        for (int j = i + 1; j < BLOCK_COUNT * BLOCK_COUNT; ++j) {
+            if (iFlatPuzzle[i] > iFlatPuzzle[j] && iFlatPuzzle[i] != 0 && iFlatPuzzle[j] != 0) {
+                iInversionCount++;
+            }
+        }
+    }
+
+    // 计算空白格的行数（从底部往上数）
+    int iBlankRowFromBottom = BLOCK_COUNT - iEmptyRow;
+
+    // 15拼图可解性规则
+    return (iInversionCount % 2 == 0) == (iBlankRowFromBottom % 2 == 1);
+}
+```
+
+#### 3.2.2 修改拼图初始化
+
+在 `LessonX.h` 中声明：
+
+```cpp
+// 生成可解的随机拼图
+void GenerateSolvablePuzzle();
+```
+
+在 `LessonX.cpp` 实现：
+
+```cpp
+//===================================================================
+// NAME        : GenerateSolvablePuzzle
+//
+// DESCRIPTION : 生成一个可解的 15 拼图，并确保空白格在 (3,3)。
+// AUTHOR      : mql
+// DATE        : 250224
+//===================================================================
+void CGameMain::GenerateSolvablePuzzle()
+{
+    int iRandData[BLOCK_COUNT * BLOCK_COUNT - 1];  // 存储1-15的编号
+    for (int i = 0; i < BLOCK_COUNT * BLOCK_COUNT - 1; ++i) {
+        iRandData[i] = i + 1;
+    }
+
+    do {
+        // 使用 Fisher-Yates 洗牌算法随机打乱拼图
+        for (int i = BLOCK_COUNT * BLOCK_COUNT - 2; i > 0; --i) {
+            int j = CSystem::RandomRange(0, i); // 生成 0~i 之间的随机索引
+            std::swap(iRandData[i], iRandData[j]);
+        }
+        // 将打乱的拼图填充到 4x4 矩阵中
+        int iIdx = 0;
+        for (int y = 0; y < BLOCK_COUNT; ++y) {
+            for (int x = 0; x < BLOCK_COUNT; ++x) {
+                if (y == BLOCK_COUNT - 1 && x == BLOCK_COUNT - 1) {
+                    m_iBlockState[y][x] = 0; // 预留最后一格为空白格
+                } else {
+                    m_iBlockState[y][x] = iRandData[iIdx++];
+                }
+            }
+        }
+    } while (!IsSolvable(m_iBlockState)); // 重新生成直到满足可解性
+}
+```
+
+#### 3.2.3 修改 `GameInit()`
+
+```cpp
+//===================================================================
+// NAME        : GameInit
+//
+// DESCRIPTION : 游戏初始化。生成并打乱拼图方块。
+// AUTHOR      : mql
+// DATE        : 250224
+//===================================================================
+void CGameMain::GameInit()
+{
+    // 生成可解的拼图
+    GenerateSolvablePuzzle();
+    // 绑定拼图到精灵
+    for (int y = 0; y < BLOCK_COUNT; ++y) {
+        for (int x = 0; x < BLOCK_COUNT; ++x) {
+            int iBlockValue = m_iBlockState[y][x];
+
+            int iIdx = XYToOneIndex(x, y); // 获取一维索引
+
+            if (iBlockValue == 0) {
+                m_spBlock[iIdx] = new CSprite("NULL"); // 空白块
+            } else {
+                char *szSpName = CSystem::MakeSpriteName("PictureBlock", iBlockValue);
+                m_spBlock[iIdx] = new CSprite(szSpName);
+            }
+
+            // 重新渲染拼图
+            MoveSpriteToBlock(m_spBlock[iIdx], x, y);
+        }
+    }
+}
+```
 
 ## 4. 系统测试
 
