@@ -665,13 +665,13 @@ m_spGameBegin->SetSpriteVisible(true);
 
 ### 3.2 改进随机打乱算法
 
-#### 3.2.1 添加判断拼图可解性的函数
+#### 3.2.1 实现判断15拼图可解性的函数
 
 在 `LessonX.h` 中声明：
 
 ```cpp
-// 判断当前拼图是否可解
-bool IsSolvable(int puzzle[BLOCK_COUNT][BLOCK_COUNT]);
+// 判断15拼图是否可解
+bool IsSolvable(int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT]);
 ```
 
 在 `LessonX.cpp` 中实现：
@@ -680,14 +680,14 @@ bool IsSolvable(int puzzle[BLOCK_COUNT][BLOCK_COUNT]);
 //===================================================================
 // NAME        : IsSolvable
 //
-// DESCRIPTION : 判断当前拼图是否可解。
+// DESCRIPTION : 判断15拼图是否可解。
 // AUTHOR      : mql
 // DATE        : 250224
 //===================================================================
 bool CGameMain::IsSolvable(int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT])
 {
     int iInversionCount = 0;
-    int iFlatPuzzle[BLOCK_COUNT * BLOCK_COUNT]; // 将 4x4 转换成一维数组
+    int iFlatPuzzle[BLOCK_COUNT * BLOCK_COUNT]; // 将 4x4 矩阵转换成一维数组
     int iIdx = 0;
     int iEmptyRow = 0;
 
@@ -702,7 +702,7 @@ bool CGameMain::IsSolvable(int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT])
         }
     }
 
-    // 计算逆序数
+    // 双指针计算逆序对数
     for (int i = 0; i < BLOCK_COUNT * BLOCK_COUNT - 1; ++i) {
         for (int j = i + 1; j < BLOCK_COUNT * BLOCK_COUNT; ++j) {
             if (iFlatPuzzle[i] > iFlatPuzzle[j] && iFlatPuzzle[i] != 0 && iFlatPuzzle[j] != 0) {
@@ -711,10 +711,10 @@ bool CGameMain::IsSolvable(int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT])
         }
     }
 
-    // 计算空白格的行数（从底部往上数）
+    // 计算空白格所在行（从下往上数）
     int iBlankRowFromBottom = BLOCK_COUNT - iEmptyRow;
 
-    // 15拼图可解性规则
+    // 15拼图可解性规则：一奇一偶
     return (iInversionCount % 2 == 0) == (iBlankRowFromBottom % 2 == 1);
 }
 ```
@@ -740,6 +740,7 @@ void GenerateSolvablePuzzle();
 //===================================================================
 void CGameMain::GenerateSolvablePuzzle()
 {
+    // 填充随机数据
     int iRandData[BLOCK_COUNT * BLOCK_COUNT - 1];  // 存储1-15的编号
     for (int i = 0; i < BLOCK_COUNT * BLOCK_COUNT - 1; ++i) {
         iRandData[i] = i + 1;
