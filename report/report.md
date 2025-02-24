@@ -229,7 +229,7 @@ bool IsGameWin();
 
 ### 2.3 详细设计
 
-接下来分析游戏的主要逻辑和相关算法实现，并附录使用到的函数接口。
+接下来分析游戏的主要逻辑和相关算法实现。
 
 #### 2.3.1 游戏初始化
 
@@ -639,10 +639,6 @@ m_spGameBegin->SetSpriteVisible(true);
 
 ## 3. 上机调试过程
 
-调试过程中遇到的主要问题，分析原因并给出解决思路；对设计和编码的回顾讨论和分析。
-
----
-
 由于进行了比较细致的问题分析，所以在调试过程中，除了输入错误，并没有其他大的调试问题。但是在完成游戏的开发后，遇到了 15 puzzle 算法可解性的问题。发现之前随机打乱的拼图，并不总是能够复原的。为了解决这一问题，就要对之前的随机打乱算法进行一些改进。
 
 通过查阅资料，首先厘清15拼图的可解性规则。
@@ -719,12 +715,12 @@ bool CGameMain::IsSolvable(int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT])
 }
 ```
 
-#### 3.2.2 修改拼图初始化
+#### 3.2.2 实现生成可解的随机拼图的函数
 
 在 `LessonX.h` 中声明：
 
 ```cpp
-// 生成可解的随机拼图
+// 生成可解的随机15拼图
 void GenerateSolvablePuzzle();
 ```
 
@@ -734,7 +730,7 @@ void GenerateSolvablePuzzle();
 //===================================================================
 // NAME        : GenerateSolvablePuzzle
 //
-// DESCRIPTION : 生成一个可解的 15 拼图，并确保空白格在 (3,3)。
+// DESCRIPTION : 生成可解的随机15拼图，并确保空白格在 (3,3)。
 // AUTHOR      : mql
 // DATE        : 250224
 //===================================================================
@@ -794,13 +790,14 @@ void CGameMain::GameInit()
                 char *szSpName = CSystem::MakeSpriteName("PictureBlock", iBlockValue);
                 m_spBlock[iIdx] = new CSprite(szSpName);
             }
-
             // 重新渲染拼图
             MoveSpriteToBlock(m_spBlock[iIdx], x, y);
         }
     }
 }
 ```
+
+通过改进随机算法，可以确保随机生成的拼图必定具有可解性。
 
 ## 4. 系统测试
 
@@ -839,3 +836,12 @@ void CGameMain::GameInit()
 在完成这次课程设计的过程中，我使用了Github进行代码管理，并通过整理相关资料、文档，也提高了项目文件的组织能力。我也发现了自己对C++的运用还不够熟练和扎实，仍然需要在课外多思考多实践。
 
 ## 7. 参考文献
+
+[1] oiwiki. 15-puzzle[EB/OL]. (2024-12-26)[2025-02-24]. https://oi-wiki.org/misc/15-puzzle/.
+
+[2] Charles Dale. C++ Coding Guidelines[EB/OL]. (2002-10-18)[2025-02-24]. https://www1.coe.neu.edu/~ctd/ISY240/CodingGuidelines.
+
+[3] Gao Haoyang. Fisher–Yates shuffle 洗牌算法[EB/OL]. (2016-10-16)[2025-02-24]. https://www1.coe.neu.edu/~ctd/ISY240/CodingGuidelines.
+
+[4] Jamie Mulholland. The Fifteen Puzzle[EB/OL]. (2019-01-01)[2025-02-24]. https://www.sfu.ca/~jtmulhol/math302/puzzles-15.html.
+
