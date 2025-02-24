@@ -10,6 +10,7 @@
 // includes
 //------------------------------
 #include <stdio.h>
+#include <algorithm>
 #include "CommonClass.h"
 #include "LessonX.h"
 
@@ -81,40 +82,30 @@ void CGameMain::GameMainLoop(float fDeltaTime)
 //
 // DESCRIPTION : 游戏初始化。生成并打乱拼图方块。
 // AUTHOR      : mql
-// DATE        : 250221
+// DATE        : 250224
 //===================================================================
 void CGameMain::GameInit()
 {
-	int iDataCount = BLOCK_COUNT*BLOCK_COUNT - 1;
-	// 初始化随机数据
-	int iRandData[BLOCK_COUNT*BLOCK_COUNT-1];
-	for (int i = 0; i < BLOCK_COUNT*BLOCK_COUNT-1; ++i) {
-		iRandData[i] = i + 1;
-	}
+    // 生成可解的拼图
+    GenerateSolvablePuzzle();
+    // 绑定拼图到精灵
+    for (int y = 0; y < BLOCK_COUNT; ++y) {
+        for (int x = 0; x < BLOCK_COUNT; ++x) {
+            int iBlockValue = m_iBlockState[y][x];
 
-	// 遍历状态矩阵并随机打乱拼图
-	for (int y = 0; y < BLOCK_COUNT; ++y) {
-		for (int x = 0; x < BLOCK_COUNT; ++x) {
-			// 获取一维索引
-			int iIdx = XYToOneIndex(x, y);
-			// 配置空白方块
-			if (x == BLOCK_COUNT - 1 && y == BLOCK_COUNT - 1) {
-				m_iBlockState[y][x] = 0;
-				m_spBlock[iIdx] = new CSprite("NULL");
-			} else {
-				int randIdx = CSystem::RandomRange(0, iDataCount - 1);  // 随机选择编号
-				m_iBlockState[y][x] = iRandData[randIdx];               // 绑定随机编号
-				char *szSpName = CSystem::MakeSpriteName("PictureBlock", m_iBlockState[y][x]);
-				m_spBlock[iIdx] = new CSprite(szSpName);                // 绑定对应拼图
-				MoveSpriteToBlock(m_spBlock[iIdx], x, y);               // 重新渲染拼图
-				// 移动剩余数据，防止重复赋值
-				for (int i = randIdx; i < iDataCount - 1; ++i)
-					iRandData[i] = iRandData[i + 1];
-				iDataCount--;
-			}
-		}
-	}
+            int iIdx = XYToOneIndex(x, y); // 获取一维索引
 
+            if (iBlockValue == 0) {
+                m_spBlock[iIdx] = new CSprite("NULL"); // 空白块
+            } else {
+                char *szSpName = CSystem::MakeSpriteName("PictureBlock", iBlockValue);
+                m_spBlock[iIdx] = new CSprite(szSpName);
+            }
+
+            // 重新渲染拼图
+            MoveSpriteToBlock(m_spBlock[iIdx], x, y);
+        }
+    }
 }
 
 //===================================================================
@@ -295,4 +286,79 @@ bool CGameMain::IsGameWin()
     }
 
     return true;
+}
+
+//===================================================================
+// NAME        : IsSolvable
+//
+// DESCRIPTION : 判断当前拼图是否可解。
+// AUTHOR      : mql
+// DATE        : 250224
+//===================================================================
+bool CGameMain::IsSolvable(int m_iBlockState[BLOCK_COUNT][BLOCK_COUNT])
+{
+    int iInversionCount = 0;
+    int iFlatPuzzle[BLOCK_COUNT * BLOCK_COUNT]; // 将 4x4 转换成一维数组
+    int iIdx = 0;
+    int iEmptyRow = 0;
+
+    // 转换拼图为一维数组，并记录空白块所在行号（从上往下数）
+    for (int y = 0; y < BLOCK_COUNT; ++y) {
+        for (int x = 0; x < BLOCK_COUNT; ++x) {
+            iFlatPuzzle[iIdx] = m_iBlockState[y][x];
+            if (m_iBlockState[y][x] == 0) {
+                iEmptyRow = y; // 记录空白块行号
+            }
+            iIdx++;
+        }
+    }
+
+    // 计算逆序数
+    for (int i = 0; i < BLOCK_COUNT * BLOCK_COUNT - 1; ++i) {
+        for (int j = i + 1; j < BLOCK_COUNT * BLOCK_COUNT; ++j) {
+            if (iFlatPuzzle[i] > iFlatPuzzle[j] && iFlatPuzzle[i] != 0 && iFlatPuzzle[j] != 0) {
+                iInversionCount++;
+            }
+        }
+    }
+
+    // 计算空白格的行数（从底部往上数）
+    int iBlankRowFromBottom = BLOCK_COUNT - iEmptyRow;
+
+    // 15拼图可解性规则
+    return (iInversionCount % 2 == 0) == (iBlankRowFromBottom % 2 == 1);
+}
+
+//===================================================================
+// NAME        : GenerateSolvablePuzzle
+//
+// DESCRIPTION : 生成一个可解的 15 拼图，并确保空白格在 (3,3)。
+// AUTHOR      : mql
+// DATE        : 250224
+//===================================================================
+void CGameMain::GenerateSolvablePuzzle()
+{
+    int iRandData[BLOCK_COUNT * BLOCK_COUNT - 1];  // 存储1-15的编号
+    for (int i = 0; i < BLOCK_COUNT * BLOCK_COUNT - 1; ++i) {
+        iRandData[i] = i + 1;
+    }
+
+    do {
+        // 使用 Fisher-Yates 洗牌算法随机打乱拼图
+        for (int i = BLOCK_COUNT * BLOCK_COUNT - 2; i > 0; --i) {
+            int j = CSystem::RandomRange(0, i); // 生成 0~i 之间的随机索引
+            std::swap(iRandData[i], iRandData[j]);
+        }
+        // 将打乱的拼图填充到 4x4 矩阵中
+        int iIdx = 0;
+        for (int y = 0; y < BLOCK_COUNT; ++y) {
+            for (int x = 0; x < BLOCK_COUNT; ++x) {
+                if (y == BLOCK_COUNT - 1 && x == BLOCK_COUNT - 1) {
+                    m_iBlockState[y][x] = 0; // 预留最后一格为空白格
+                } else {
+                    m_iBlockState[y][x] = iRandData[iIdx++];
+                }
+            }
+        }
+    } while (!IsSolvable(m_iBlockState)); // 重新生成直到满足可解性
 }

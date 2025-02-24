@@ -66,6 +66,11 @@ public :
 	void MoveSpriteToBlock(CSprite* tmpSprite, const int iIndexX, const int iIndexY);
     // 判断游戏是否获胜
     bool IsGameWin();
+
+	// 判断当前拼图是否可解
+	bool IsSolvable(int puzzle[BLOCK_COUNT][BLOCK_COUNT]);
+	// 生成可解的随机拼图
+	void GenerateSolvablePuzzle();
 protected :
 private :
 // attributes
